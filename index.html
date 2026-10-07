@@ -291,7 +291,7 @@
         }
 
         // นำ URL ที่ก๊อปปี้จากขั้นตอนที่ 1 มาวางในเครื่องหมายคำพูดด้านล่างนี้
-        const API_URL = "https://script.google.com/macros/s/AKfycbxq2EMDa54jFjbMrqjCOwppq_ECG4gklb3JX84PjrWnORgbPs7R7q2rnXeuD23ITSfJ/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbwKnN-tuvcZDwuwl1Wf-Efl7kLLkf8cIhSa79GEeYvVmi3bz7ueh3uTLWko_px3ACKKcQ/exec"; 
 
         function fetchData() {
             const year = document.getElementById('select-year').value;
@@ -314,7 +314,7 @@
                 document.getElementById('error-msg').innerText = "ไม่สามารถเชื่อมต่อฐานข้อมูลได้: " + error.message;
                 document.getElementById('error-msg').classList.remove('hidden');
             });
-       }
+        }
 
         function updateUI(data) {
             document.getElementById('loading').classList.add('hidden');
