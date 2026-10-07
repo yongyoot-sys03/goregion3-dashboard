@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>หมวด 2 รายงานการใช้พลังงานและของเสีย ก๊าซเรือนกระจก - สนง.ปข.3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body { font-family: 'Kanit', sans-serif; background-color: #f0f4f8; }
+        
+        /* สไตล์ 3D นูน มีมิติ สำหรับการ์ด */
+        .neo-card {
+            background: linear-gradient(145deg, #ffffff, #f3f5f8);
+            box-shadow: 8px 8px 16px #dce1e6, -8px -8px 16px #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .neo-card:hover { transform: translateY(-3px); box-shadow: 10px 10px 20px #dce1e6, -10px -10px 20px #ffffff; }
+        
+        /* สไตล์เฉดสีไล่ระดับสำหรับตัวหนังสือ */
+        .text-gradient-red {
+            background: linear-gradient(to bottom right, #ef4444, #9f1239);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .text-gradient-green {
+            background: linear-gradient(to bottom right, #10b981, #047857);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ปุ่มเปิดปิดเพลง มุมขวาล่าง */
+        .music-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            cursor: pointer;
+            z-index: 50;
+            font-size: 24px;
+            transition: transform 0.3s;
+        }
+        .music-toggle:hover { transform: scale(1.1); }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+
+    <!-- =================เครื่องเล่นเพลง (ดึงจาก GitHub โดยตรง)================= -->
+    <audio id="bgMusic" loop>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- ปุ่มเปิด/ปิดเพลง -->
+    <div id="musicBtn" class="music-toggle" onclick="toggleMusic()" title="เปิด/ปิดเพลง">
+        🔇
+    </div>
+    <!-- ======================================================= -->
+
+    <!-- เมนู Tabs -->
+    <div class="w-full max-w-lg mb-5 flex flex-col sm:flex-row gap-3 text-sm sm:text-base">
+        <button id="tab-energy" onclick="switchTab('energy')" class="flex-1 bg-gradient-to-r from-red-600 to-[#e10b17] text-white py-3 rounded-2xl font-bold shadow-lg shadow-red-200 transition-all border border-red-400">⚡ พลังงาน</button>
+        <button id="tab-waste" onclick="switchTab('waste')" class="flex-1 bg-white text-gray-500 hover:text-gray-700 py-3 rounded-2xl font-bold shadow-sm transition-all border border-gray-200">♻ ของเสีย</button>
+        <button id="tab-ghg" onclick="switchTab('ghg')" class="flex-1 bg-white text-gray-500 hover:text-gray-700 py-3 rounded-2xl font-bold shadow-sm transition-all border border-gray-200">☁️ ก๊าซเรือนกระจก</button>
+    </div>
+
+    <!-- แถบเครื่องมือค้นหา -->
+    <div class="w-full max-w-lg mb-6 bg-white rounded-3xl shadow-md p-5 flex flex-wrap gap-3 justify-center items-center border border-gray-100">
+        <select id="select-year" class="bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-gray-700 font-bold focus:outline-none focus:ring-2 focus:ring-red-400 focus:bg-white transition-all shadow-inner">
+            <option value="2566">ปี 2566</option>
+            <option value="2567">ปี 2567</option>
+            <option value="2568">ปี 2568</option>
+            <option value="2569" selected>ปี 2569</option>
+        </select>
+        
+        <select id="select-month" class="bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-gray-700 font-bold focus:outline-none focus:ring-2 focus:ring-red-400 focus:bg-white transition-all shadow-inner">
+            <option value="ทั้งปี">📌 ทั้งปี (ตลอดปี)</option>
+            <option value="มกราคม" selected>มกราคม</option>
+            <option value="กุมภาพันธ์">กุมภาพันธ์</option>
+            <option value="มีนาคม">มีนาคม</option>
+            <option value="เมษายน">เมษายน</option>
+            <option value="พฤษภาคม">พฤษภาคม</option>
+            <option value="มิถุนายน">มิถุนายน</option>
+            <option value="กรกฎาคม">กรกฎาคม</option>
+            <option value="สิงหาคม">สิงหาคม</option>
+            <option value="กันยายน">กันยายน</option>
+            <option value="ตุลาคม">ตุลาคม</option>
+            <option value="พฤศจิกายน">พฤศจิกายน</option>
+            <option value="ธันวาคม">ธันวาคม</option>
+        </select>
+
+        <button onclick="fetchData()" class="bg-gradient-to-r from-[#3b719f] to-[#254b6e] text-white px-6 py-2.5 rounded-xl font-bold hover:shadow-lg hover:shadow-blue-200 transition-all shadow-md">เรียกดูข้อมูล</button>
+        
+        <button id="btn-download" onclick="downloadImage()" class="hidden bg-gradient-to-r from-gray-700 to-gray-900 text-white px-5 py-2.5 rounded-xl font-bold hover:shadow-lg transition-all shadow-md flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+            บันทึกรูปภาพ
+        </button>
+    </div>
+
+    <!-- หน้าจอเริ่มต้น -->
+    <div id="welcome-screen" class="w-full max-w-lg mt-2">
+        <div class="flex flex-col items-center justify-center bg-white rounded-[2rem] shadow-xl p-10 border border-gray-100 text-center">
+            <img src="https://i.postimg.cc/BnxKQyWx/LINE-ALBUM-New-logo-221018.jpg" alt="โลโก้" class="h-24 w-auto mb-6 object-contain drop-shadow-sm">
+            <h2 class="text-2xl font-extrabold text-gray-800">สำนักงานไปรษณีย์เขต 3</h2>
+            <p class="text-lg text-gray-500 font-bold mt-1">หมวด 2 การสื่อสารและสร้างจิตสำนึก</p>
+            <div class="mt-8 flex items-center justify-center text-[#3b719f] font-bold text-base bg-blue-50 py-3 px-8 rounded-full shadow-inner border border-blue-100">
+                <span>👆 กรุณาเลือกช่วงเวลา และกด "เรียกดูข้อมูล"</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- หน้าต่างกำลังโหลด -->
+    <div id="loading" class="hidden w-full max-w-lg mt-2">
+        <div class="flex flex-col items-center justify-center bg-white rounded-[2rem] shadow-xl p-10 border border-gray-100 text-center">
+            <img src="https://i.postimg.cc/BnxKQyWx/LINE-ALBUM-New-logo-221018.jpg" alt="โลโก้" class="h-24 w-auto mb-6 object-contain animate-pulse drop-shadow-sm">
+            <h2 class="text-2xl font-extrabold text-gray-800">สำนักงานไปรษณีย์เขต 3</h2>
+            <p class="text-lg text-gray-500 font-bold mt-1">หมวด 2 การสื่อสารและสร้างจิตสำนึก</p>
+            <div class="mt-8 flex items-center justify-center gap-3 text-[#e10b17] font-bold text-lg">
+                <svg class="animate-spin h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>กำลังประมวลผลข้อมูล...</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="error-msg" class="text-red-600 font-bold bg-red-100 p-4 rounded-xl w-full max-w-lg text-center hidden shadow-sm border border-red-300 mb-4 mt-2"></div>
+
+    <!-- ==================== DASHBOARD: พลังงาน ==================== -->
+    <div id="dashboard-energy" class="hidden bg-white rounded-[2.5rem] shadow-[0_20px_40px_rgba(0,0,0,0.08)] w-full max-w-lg p-6 sm:p-8 space-y-5 border border-white">
+        <div class="text-center mb-6 flex flex-col items-center">
+            <img src="https://i.postimg.cc/BnxKQyWx/LINE-ALBUM-New-logo-221018.jpg" alt="โลโก้" class="h-20 sm:h-24 w-auto mb-4 object-contain drop-shadow-md" crossorigin="anonymous">
+            <h2 class="text-2xl font-extrabold text-gray-800">สำนักงานไปรษณีย์เขต 3</h2>
+            <p class="text-lg text-gray-500 font-bold mt-1">รายงานผลการใช้ทรัพยากรพลังงาน</p>
+            <h1 class="display-month-year text-5xl sm:text-6xl font-black text-[#e10b17] mt-5 drop-shadow-sm tracking-wide">...</h1>
+        </div>
+        
+        <div class="neo-card p-4 flex items-center">
+            <div class="flex flex-col items-center w-1/4 border-r border-gray-200 pr-2">
+                <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Droplet/3D/droplet_3d.png" class="w-14 h-14 drop-shadow-[0_5px_5px_rgba(0,0,0,0.2)] mb-1" crossorigin="anonymous">
+                <span class="text-sm font-bold text-gray-600">น้ำประปา</span>
+            </div>
+            <div class="w-2/4 text-center px-2 flex flex-col justify-center h-full"><div id="val-water" class="text-5xl font-extrabold tracking-tighter drop-shadow-sm">-</div><div id="text-water" class="text-sm mt-1 font-semibold">-</div></div>
+            <div id="icon-water" class="w-1/4 flex justify-center pl-2"></div>
+        </div>
+        <div class="neo-card p-4 flex items-center">
+            <div class="flex flex-col items-center w-1/4 border-r border-gray-200 pr-2">
+                <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/High%20voltage/3D/high_voltage_3d.png" class="w-14 h-14 drop-shadow-[0_5px_5px_rgba(0,0,0,0.2)] mb-1" crossorigin="anonymous">
+                <span class="text-sm font-bold text-gray-600">ไฟฟ้า</span>
+            </div>
+            <div class="w-2/4 text-center px-2 flex flex-col justify-center h-full"><div id="val-power" class="text-5xl font-extrabold tracking-tighter drop-shadow-sm">-</div><div id="text-power" class="text-sm mt-1 font-semibold">-</div></div>
+            <div id="icon-power" class="w-1/4 flex justify-center pl-2"></div>
+        </div>
+        <div class="neo-card p-4 flex items-center">
+            <div class="flex flex-col items-center w-1/4 border-r border-gray-200 pr-2">
+                <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Fuel%20pump/3D/fuel_pump_3d.png" class="w-14 h-14 drop-shadow-[0_5px_5px_rgba(0,0,0,0.2)] mb-1" crossorigin="anonymous">
+                <span class="text-sm font-bold text-gray-600">น้ำมัน</span>
+            </div>
+            <div class="w-2/4 text-center px-2 flex flex-col justify-center h-full"><div id="val-oil" class="text-5xl font-extrabold tracking-tighter drop-shadow-sm">-</div><div id="text-oil" class="text-sm mt-1 font-semibold">-</div></div>
+            <div id="icon-oil" class="w-1/4 flex justify-center pl-2"></div>
+        </div>
+        <div class="neo-card p-4 flex items-center">
+            <div class="flex flex-col items-center w-1/4 border-r border-gray-200 pr-2">
+                <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Page%20facing%20up/3D/page_facing_up_3d.png" class="w-14 h-14 drop-shadow-[0_5px_5px_rgba(0,0,0,0.2)] mb-1" crossorigin="anonymous">
+                <span class="text-sm font-bold text-gray-600">กระดาษ</span>
+            </div>
+            <div class="w-2/4 text-center px-2 flex flex-col justify-center h-full"><div id="val-paper" class="text-5xl font-extrabold tracking-tighter drop-shadow-sm">-</div><div id="text-paper" class="text-sm mt-1 font-semibold">-</div></div>
+            <div id="icon-paper" class="w-1/4 flex justify-center pl-2"></div>
+        </div>
+        <div class="text-center mt-6 pt-4 border-t border-gray-100"><p class="display-compare-year text-sm text-gray-400 font-semibold">หมายเหตุ : เปรียบเทียบกับ ปี ...</p></div>
+    </div>
+
+    <!-- ==================== DASHBOARD: ของเสีย ==================== -->
+    <div id="dashboard-waste" class="hidden bg-white rounded-[2.5rem] shadow-[0_20px_40px_rgba(0,0,0,0.08)] w-full max-w-lg p-6 sm:p-8 space-y-5 border border-white">
+        <div class="text-center mb-6 flex flex-col items-center">
+            <img src="https://i.postimg.cc/BnxKQyWx/LINE-ALBUM-New-logo-221018.jpg" alt="โลโก้" class="h-20 sm:h-24 w-auto mb-4 object-contain drop-shadow-md" crossorigin="anonymous">
+            <h2 class="text-2xl font-extrabold text-gray-800">สำนักงานไปรษณีย์เขต 3</h2>
+            <p class="text-lg text-gray-500 font-bold mt-1">รายงานผลการจัดการของเสีย</p>
+            <h1 class="display-month-year text-5xl sm:text-6xl font-black text-[#e10b17] mt-5 drop-shadow-sm tracking-wide">...</h1>
+        </div>
+        <div class="neo-card p-4 flex items-center">
+            <div class="flex flex-col items-center w-1/4 border-r border-gray-200 pr-2">
+                <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Wastebasket/3D/wastebasket_3d.png" class="w-14 h-14 drop-shadow-[0_5px_5px_rgba(0,0,0,0.2)] mb-1" crossorigin="anonymous">
+                <span class="text-sm font-bold text-gray-600 text-center">ขยะทั่วไป</span>
+            </div>
+            <div class="w-2/4 text-center px-2 flex flex-col justify-center h-full"><div id="val-genWaste" class="text-5xl font-extrabold tracking-tighter drop-shadow-sm">-</div><div id="text-genWaste" class="text-sm mt-1 font-semibold">-</div></div>
+            <div id="icon-genWaste" class="w-1/4 flex justify-center pl-2"></div>
+        </div>
+        <div class="neo-card p-4 flex items-center">
+            <div class="flex flex-col items-center w-1/4 border-r border-gray-200 pr-2">
+                <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Recycling%20symbol/3D/recycling_symbol_3d.png" class="w-14 h-14 drop-shadow-[0_5px_5px_rgba(0,0,0,0.2)] mb-1" crossorigin="anonymous">
+                <span class="text-sm font-bold text-gray-600 text-center">รีไซเคิล</span>
+            </div>
+            <div class="w-2/4 text-center px-2 flex flex-col justify-center h-full"><div id="val-recycle" class="text-5xl font-extrabold tracking-tighter drop-shadow-sm">-</div><div id="text-recycle" class="text-sm mt-1 font-semibold">-</div></div>
+            <div id="icon-recycle" class="w-1/4 flex justify-center pl-2"></div>
+        </div>
+        <div class="text-center mt-6 pt-4 border-t border-gray-100 bg-gray-50 rounded-2xl pb-4 shadow-inner">
+            <p class="display-compare-year text-sm text-gray-400 font-semibold mb-1 pt-2">หมายเหตุ : เปรียบเทียบกับ ปี ...</p>
+            <p class="text-[15px] text-[#10b981] font-extrabold drop-shadow-sm">เป้าหมายปี <span id="note-year"></span>: รีไซเคิล <span id="note-target"></span>% ของขยะรวม</p>
+        </div>
+    </div>
+
+    <!-- ==================== DASHBOARD: ก๊าซเรือนกระจก ==================== -->
+    <div id="dashboard-ghg" class="hidden bg-white rounded-[2.5rem] shadow-[0_20px_40px_rgba(0,0,0,0.08)] w-full max-w-lg p-6 sm:p-8 space-y-5 border border-white">
+        <div class="text-center mb-6 flex flex-col items-center">
+            <img src="https://i.postimg.cc/BnxKQyWx/LINE-ALBUM-New-logo-221018.jpg" alt="โลโก้" class="h-20 sm:h-24 w-auto mb-4 object-contain drop-shadow-md" crossorigin="anonymous">
+            <h2 class="text-2xl font-extrabold text-gray-800">สำนักงานไปรษณีย์เขต 3</h2>
+            <p class="text-lg text-gray-500 font-bold mt-1">รายงานผลการปล่อยก๊าซเรือนกระจก</p>
+            <h1 class="display-month-year text-5xl sm:text-6xl font-black text-[#e10b17] mt-5 drop-shadow-sm tracking-wide">...</h1>
+        </div>
+        <div class="neo-card p-4 flex items-center">
+            <div class="flex flex-col items-center w-1/4 border-r border-gray-200 pr-2">
+                <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Cloud/3D/cloud_3d.png" class="w-14 h-14 drop-shadow-[0_5px_5px_rgba(0,0,0,0.2)] mb-1" crossorigin="anonymous">
+                <span class="text-sm font-bold text-gray-600 text-center leading-tight">ก๊าซเรือน<br>กระจก</span>
+            </div>
+            <div class="w-2/4 text-center px-2 flex flex-col justify-center h-full">
+                <div id="val-ghgTotal" class="text-5xl font-extrabold tracking-tighter drop-shadow-sm">-</div>
+                <div id="text-ghgTotal" class="text-sm mt-1 font-semibold">-</div>
+            </div>
+            <div id="icon-ghgTotal" class="w-1/4 flex justify-center pl-2"></div>
+        </div>
+        <div class="text-center mt-6 pt-4 border-t border-gray-100 bg-gray-50 rounded-2xl pb-4 shadow-inner">
+            <p class="display-compare-year text-sm text-gray-400 font-semibold mb-1 pt-2">หมายเหตุ : เปรียบเทียบกับ ปี ...</p>
+            <p class="text-[15px] text-[#10b981] font-extrabold drop-shadow-sm">เป้าหมายปี <span id="note-ghg-year"></span>: ลดลงจากปีก่อน <span id="note-ghg-target"></span>%</p>
+        </div>
+    </div>
+
+    <script>
+        const smileIcon = `<img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Smiling%20face%20with%20smiling%20eyes/3D/smiling_face_with_smiling_eyes_3d.png" crossorigin="anonymous" class="w-[70px] h-[70px] drop-shadow-[0_8px_8px_rgba(0,0,0,0.25)] transform transition hover:scale-110">`;
+        const frownIcon = `<img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Worried%20face/3D/worried_face_3d.png" crossorigin="anonymous" class="w-[70px] h-[70px] drop-shadow-[0_8px_8px_rgba(0,0,0,0.25)] transform transition hover:scale-110">`;
+        
+        // ================= สคริปต์ควบคุมเครื่องเล่นเพลง =================
+        let musicStarted = false;
+        let isPlaying = false;
+        const bgMusic = document.getElementById('bgMusic');
+        const musicBtn = document.getElementById('musicBtn');
+
+        // ฟังก์ชันกดเปิด/ปิดผ่านปุ่ม
+        function toggleMusic() {
+            if (isPlaying) {
+                bgMusic.pause();
+                musicBtn.innerHTML = '🔇';
+                isPlaying = false;
+            } else {
+                bgMusic.play();
+                musicBtn.innerHTML = '🎵';
+                isPlaying = true;
+                musicStarted = true;
+            }
+        }
+
+        // จับเหตุการณ์คลิกครั้งแรกของหน้าจอ (Autoplay หลังคลิก)
+        document.body.addEventListener('click', function() {
+            if (!musicStarted) {
+                bgMusic.play().then(() => {
+                    musicBtn.innerHTML = '🎵';
+                    isPlaying = true;
+                    musicStarted = true;
+                }).catch((e) => {
+                    console.log("บราว์เซอร์บล็อกการเล่นเสียง ต้องกดที่ปุ่มลำโพงเอง");
+                });
+            }
+        }, { once: true }); // ทำงานแค่ครั้งแรกครั้งเดียว
+        // =========================================================
+
+        let currentTab = 'energy';
+
+        function switchTab(tabName) {
+            currentTab = tabName;
+            const activeClass = 'flex-1 bg-gradient-to-r from-red-600 to-[#e10b17] text-white py-3 rounded-2xl font-bold shadow-lg shadow-red-200 transition-all border border-red-400';
+            const inactiveClass = 'flex-1 bg-white text-gray-500 hover:text-gray-700 py-3 rounded-2xl font-bold shadow-sm transition-all border border-gray-200';
+            
+            document.getElementById('tab-energy').className = tabName === 'energy' ? activeClass : inactiveClass;
+            document.getElementById('tab-waste').className = tabName === 'waste' ? activeClass : inactiveClass;
+            document.getElementById('tab-ghg').className = tabName === 'ghg' ? activeClass : inactiveClass;
+            
+            if(!document.getElementById('btn-download').classList.contains('hidden')){
+                document.getElementById('dashboard-energy').classList.toggle('hidden', tabName !== 'energy');
+                document.getElementById('dashboard-waste').classList.toggle('hidden', tabName !== 'waste');
+                document.getElementById('dashboard-ghg').classList.toggle('hidden', tabName !== 'ghg');
+            }
+        }
+
+        // นำ URL ที่ก๊อปปี้จากขั้นตอนที่ 1 มาวางในเครื่องหมายคำพูดด้านล่างนี้
+        const API_URL = "https://script.google.com/macros/s/AKfycbxq2EMDa54jFjbMrqjCOwppq_ECG4gklb3JX84PjrWnORgbPs7R7q2rnXeuD23ITSfJ/exec"; 
+
+        function fetchData() {
+            const year = document.getElementById('select-year').value;
+            const month = document.getElementById('select-month').value;
+
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('dashboard-energy').classList.add('hidden');
+            document.getElementById('dashboard-waste').classList.add('hidden');
+            document.getElementById('dashboard-ghg').classList.add('hidden');
+            document.getElementById('error-msg').classList.add('hidden');
+            document.getElementById('btn-download').classList.add('hidden');
+            document.getElementById('loading').classList.remove('hidden');
+
+        // ดึงข้อมูลผ่าน API
+        fetch(`${API_URL}?year=${year}&month=${month}`)
+            .then(response => response.json())
+            .then(data => updateUI(data))
+            .catch(error => {
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('error-msg').innerText = "ไม่สามารถเชื่อมต่อฐานข้อมูลได้: " + error.message;
+                document.getElementById('error-msg').classList.remove('hidden');
+            });
+       }
+
+        function updateUI(data) {
+            document.getElementById('loading').classList.add('hidden');
+            
+            if(data.error) {
+                document.getElementById('error-msg').innerText = data.error;
+                document.getElementById('error-msg').classList.remove('hidden');
+                return;
+            }
+
+            document.getElementById(`dashboard-${currentTab}`).classList.remove('hidden');
+            document.getElementById('btn-download').classList.remove('hidden');
+            
+            const displayMonth = data.month === "ทั้งปี" ? "รวมตลอดปี" : data.month;
+            document.querySelectorAll('.display-month-year').forEach(el => el.innerText = `${displayMonth} ${data.year}`);
+            document.querySelectorAll('.display-compare-year').forEach(el => el.innerText = `หมายเหตุ : เปรียบเทียบกับ ปี ${data.year - 1}`);
+            
+            if(document.getElementById('note-year')) document.getElementById('note-year').innerText = data.year;
+            if(document.getElementById('note-target')) document.getElementById('note-target').innerText = (data.year >= 2568) ? ">=50" : ">=45";
+            
+            if(document.getElementById('note-ghg-year')) document.getElementById('note-ghg-year').innerText = data.year;
+            if(document.getElementById('note-ghg-target') && !data.ghg.error) document.getElementById('note-ghg-target').innerText = data.ghg.target;
+
+            const updateCard = (type, info) => {
+                if(!info || !document.getElementById(`val-${type}`)) return;
+                const isRed = info.status === 'red';
+                
+                const valEl = document.getElementById(`val-${type}`);
+                valEl.innerText = info.percent;
+                valEl.className = `text-5xl font-black tracking-tighter drop-shadow-sm ${isRed ? 'text-gradient-red' : 'text-gradient-green'}`;
+                
+                const textEl = document.getElementById(`text-${type}`);
+                textEl.innerText = info.text;
+                textEl.className = `text-[15px] mt-1 font-bold ${isRed ? 'text-red-700' : 'text-green-700'}`;
+                
+                document.getElementById(`icon-${type}`).innerHTML = isRed ? frownIcon : smileIcon;
+            };
+
+            if(!data.energy.error) {
+                updateCard('water', data.energy.water); updateCard('power', data.energy.power);
+                updateCard('oil', data.energy.oil); updateCard('paper', data.energy.paper);
+            }
+            if(!data.waste.error) {
+                updateCard('genWaste', data.waste.genWaste); updateCard('recycle', data.waste.recycle);
+            }
+            if(!data.ghg.error) {
+                updateCard('ghgTotal', data.ghg.total);
+            }
+        }
+
+        function downloadImage() {
+            const dashboard = document.getElementById(`dashboard-${currentTab}`);
+            const btn = document.getElementById('btn-download');
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = '⏳ กำลังบันทึก...';
+            
+            // ซ่อนปุ่มเปิดเพลงตอนแคปหน้าจอ (เพื่อไม่ให้ติดไปในรูป)
+            document.getElementById('musicBtn').style.display = 'none';
+            
+            html2canvas(dashboard, { scale: 2, useCORS: true, backgroundColor: "#f0f4f8" }).then(canvas => {
+                const link = document.createElement('a');
+                const month = document.getElementById('select-month').value;
+                const year = document.getElementById('select-year').value;
+                
+                let typeName = 'พลังงาน';
+                if(currentTab === 'waste') typeName = 'ของเสีย';
+                if(currentTab === 'ghg') typeName = 'ก๊าซเรือนกระจก';
+                
+                link.download = `รายงาน${typeName}_${month}_${year}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                // คืนค่าปุ่ม
+                btn.innerHTML = originalContent;
+                document.getElementById('musicBtn').style.display = 'flex';
+            }).catch(error => {
+                alert('เกิดข้อผิดพลาดในการโหลดรูปภาพ 3D, กรุณาลองใหม่อีกครั้ง');
+                btn.innerHTML = originalContent;
+                document.getElementById('musicBtn').style.display = 'flex';
+            });
+        }
+    </script>
+</body>
+</html>
