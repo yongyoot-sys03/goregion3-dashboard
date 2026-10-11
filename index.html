@@ -372,6 +372,7 @@
             } 
         }
 
+        // ================= 📈 จัดการสีกราฟ การเรียง และตัวเลขบนเส้น =================
         function renderCharts() {
             if(!globalChartData) return;
             const monthVal = document.getElementById('select-month').value;
@@ -386,7 +387,7 @@
             const colorY2 = '#2563eb'; // 2567: น้ำเงิน
             const colorY1 = '#eab308'; // 2568: เหลือง
             const colorCurrent = '#dc2626'; // 2569: แดง
-            const colorTarget = '#dc2626'; // เป้าหมาย
+            const colorTarget = '#dc2626'; // เป้าหมาย: แดง
 
             function createSmartChart(canvasId, seriesData) {
                 if(!document.getElementById(canvasId)) return;
@@ -422,24 +423,37 @@
                         data: {
                             labels: monthsArr,
                             datasets: [
-                                // วาดเส้นตามลำดับเพื่อความสวยงาม
-                                { label: `ปี ${parseInt(targetYear)-3}`, data: seriesData[String(parseInt(targetYear)-3)], borderColor: colorY3, borderWidth: 2, pointRadius: 0, datalabels: { display: false } },
-                                { label: `ปี ${parseInt(targetYear)-2}`, data: seriesData[String(parseInt(targetYear)-2)], borderColor: colorY2, borderWidth: 2, pointRadius: 0, datalabels: { display: false } },
-                                { label: `ปี ${parseInt(targetYear)-1}`, data: seriesData[String(parseInt(targetYear)-1)], borderColor: colorY1, borderWidth: 2.5, pointRadius: 0, datalabels: { display: false } },
-                                { label: `ปี ${targetYear}`, data: actualData, borderColor: colorCurrent, backgroundColor: colorCurrent, borderWidth: 3.5, pointRadius: 4, 
+                                { label: `ปี ${parseInt(targetYear)-3}`, data: seriesData[String(parseInt(targetYear)-3)], borderColor: colorY3, borderWidth: 2, pointRadius: 0, datalabels: { display: false }, order: 4 },
+                                { label: `ปี ${parseInt(targetYear)-2}`, data: seriesData[String(parseInt(targetYear)-2)], borderColor: colorY2, borderWidth: 2, pointRadius: 0, datalabels: { display: false }, order: 3 },
+                                { label: `ปี ${parseInt(targetYear)-1}`, data: seriesData[String(parseInt(targetYear)-1)], borderColor: colorY1, borderWidth: 2.5, pointRadius: 0, datalabels: { display: false }, order: 2 },
+                                
+                                // เส้นปัจจุบัน (สีแดงทึบ) ตัวเลขอยู่ด้านล่างจุด มีขอบขาวป้องกันการกลืน
+                                { 
+                                    label: `ปี ${targetYear}`, data: actualData, borderColor: colorCurrent, backgroundColor: colorCurrent, borderWidth: 3.5, pointRadius: 4, 
                                     datalabels: { 
-                                        display: true, 
-                                        align: 'bottom', // จัดตำแหน่งให้อยู่ใต้จุด
-                                        anchor: 'bottom', 
-                                        offset: 6, // ขยับห่างจากจุดเล็กน้อย
-                                        color: colorCurrent, 
+                                        display: true, align: 'bottom', anchor: 'bottom', offset: 6, color: colorCurrent, 
                                         font: { family: 'Kanit', size: 10, weight: 'bold' }, 
-                                        textStrokeColor: '#ffffff', // ขอบสีขาวป้องกันการกลืนไปกับเส้น
-                                        textStrokeWidth: 4, 
+                                        textStrokeColor: '#ffffff', textStrokeWidth: 4, 
                                         formatter: v => v!==null ? v.toLocaleString() : '' 
-                                    } 
+                                    }, 
+                                    order: 1 
                                 },
-                                { label: 'เป้าหมาย (-1%)', data: targetLine, borderColor: colorTarget, borderDash: [5, 5], borderWidth: 2.5, pointRadius: 0, datalabels: { display: false } }
+                                // เส้นประเป้าหมาย (อยู่บนสุด มีจุด และตัวเลขอยู่ด้านล่างจุด)
+                                { 
+                                    label: 'เป้าหมาย (-1%)', data: targetLine, borderColor: colorTarget, backgroundColor: colorTarget, borderDash: [5, 5], borderWidth: 2.5, pointRadius: 4, 
+                                    datalabels: { 
+                                        display: true, align: 'bottom', anchor: 'bottom', offset: 6, color: colorTarget, 
+                                        font: { family: 'Kanit', size: 10, weight: 'bold' }, 
+                                        textStrokeColor: '#ffffff', textStrokeWidth: 4, 
+                                        formatter: (v, ctx) => {
+                                            if(v === null) return '';
+                                            // ซ่อนตัวเลขที่จุดเชื่อมต่อกับเส้นปัจจุบัน ป้องกันตัวเลขปริ้นท์ทับกัน
+                                            if(ctx.dataIndex === lastValidIndex) return ''; 
+                                            return v.toLocaleString();
+                                        }
+                                    }, 
+                                    order: 0 
+                                }
                             ]
                         },
                         options: { 
@@ -447,6 +461,8 @@
                             plugins: { 
                                 legend: { 
                                     display: true, position: 'top', 
+                                    // เรียงสัญลักษณ์ (Reverse) ทำให้ 2566 ไป 2569 โชว์จากซ้ายไปขวา
+                                    reverse: true,
                                     labels: { 
                                         font: { family: 'Kanit', size: 10 }, boxWidth: 10, usePointStyle: true,
                                         filter: function(item, chart) { return !item.text.includes('เป้าหมาย'); }
