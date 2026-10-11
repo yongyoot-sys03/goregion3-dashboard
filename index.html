@@ -135,7 +135,7 @@
                     <span class="font-extrabold text-gray-700 text-lg leading-tight">ไฟฟ้า<br><span class="text-[10px] text-gray-400 font-normal">(หน่วย: kWh)</span></span></div>
                 <div class="flex items-center gap-2"><div class="text-right"><div id="val-power" class="text-3xl font-black tracking-tighter">-</div><div id="text-power" class="text-[10px] font-bold">-</div></div><div id="icon-power"></div></div>
             </div>
-            <div class="h-44 w-full"><canvas id="chartPower"></canvas></div>
+            <div class="h-48 w-full"><canvas id="chartPower"></canvas></div>
             <div id="ai-power" class="hidden bg-blue-50 p-4 rounded-xl border border-blue-100 text-[12.5px] text-gray-700 leading-relaxed shadow-inner"></div>
         </div>
 
@@ -145,7 +145,7 @@
                     <span class="font-extrabold text-gray-700 text-lg leading-tight">น้ำมันเชื้อเพลิง<br><span class="text-[10px] text-gray-400 font-normal">(หน่วย: ลิตร)</span></span></div>
                 <div class="flex items-center gap-2"><div class="text-right"><div id="val-oil" class="text-3xl font-black tracking-tighter">-</div><div id="text-oil" class="text-[10px] font-bold">-</div></div><div id="icon-oil"></div></div>
             </div>
-            <div class="h-44 w-full"><canvas id="chartOil"></canvas></div>
+            <div class="h-48 w-full"><canvas id="chartOil"></canvas></div>
             <div id="ai-oil" class="hidden bg-blue-50 p-4 rounded-xl border border-blue-100 text-[12.5px] text-gray-700 leading-relaxed shadow-inner"></div>
         </div>
 
@@ -155,7 +155,7 @@
                     <span class="font-extrabold text-gray-700 text-lg leading-tight">น้ำประปา<br><span class="text-[10px] text-gray-400 font-normal">(หน่วย: ลบ.ม.)</span></span></div>
                 <div class="flex items-center gap-2"><div class="text-right"><div id="val-water" class="text-3xl font-black tracking-tighter">-</div><div id="text-water" class="text-[10px] font-bold">-</div></div><div id="icon-water"></div></div>
             </div>
-            <div class="h-44 w-full"><canvas id="chartWater"></canvas></div>
+            <div class="h-48 w-full"><canvas id="chartWater"></canvas></div>
             <div id="ai-water" class="hidden bg-blue-50 p-4 rounded-xl border border-blue-100 text-[12.5px] text-gray-700 leading-relaxed shadow-inner"></div>
         </div>
 
@@ -165,7 +165,7 @@
                     <span class="font-extrabold text-gray-700 text-lg leading-tight">กระดาษ<br><span class="text-[10px] text-gray-400 font-normal">(หน่วย: รีม)</span></span></div>
                 <div class="flex items-center gap-2"><div class="text-right"><div id="val-paper" class="text-3xl font-black tracking-tighter">-</div><div id="text-paper" class="text-[10px] font-bold">-</div></div><div id="icon-paper"></div></div>
             </div>
-            <div class="h-44 w-full"><canvas id="chartPaper"></canvas></div>
+            <div class="h-48 w-full"><canvas id="chartPaper"></canvas></div>
             <div id="ai-paper" class="hidden bg-blue-50 p-4 rounded-xl border border-blue-100 text-[12.5px] text-gray-700 leading-relaxed shadow-inner"></div>
         </div>
     </div>
@@ -190,7 +190,7 @@
                     <span class="font-extrabold text-gray-700 text-lg leading-tight">ขยะทั่วไป<br><span class="text-[10px] text-gray-400 font-normal">(หน่วย: กก.)</span></span></div>
                 <div class="flex items-center gap-2"><div class="text-right"><div id="val-genWaste" class="text-3xl font-black tracking-tighter">-</div><div id="text-genWaste" class="text-[10px] font-bold">-</div></div><div id="icon-genWaste"></div></div>
             </div>
-            <div class="h-44 w-full"><canvas id="chartGenWaste"></canvas></div>
+            <div class="h-48 w-full"><canvas id="chartGenWaste"></canvas></div>
             <div id="ai-genWaste" class="hidden bg-purple-50 p-4 rounded-xl border border-purple-100 text-[12.5px] text-gray-700 leading-relaxed shadow-inner"></div>
         </div>
 
@@ -200,7 +200,7 @@
                     <span class="font-extrabold text-gray-700 text-[15px] leading-tight">สัดส่วนรีไซเคิล<br><span class="text-[10px] text-gray-400 font-normal">(หน่วย: กก.)</span></span></div>
                 <div class="flex items-center gap-2"><div class="text-right"><div id="val-recycle" class="text-3xl font-black tracking-tighter">-</div><div id="text-recycle" class="text-[10px] font-bold">-</div></div><div id="icon-recycle"></div></div>
             </div>
-            <div class="h-44 w-full"><canvas id="chartRecycle"></canvas></div>
+            <div class="h-48 w-full"><canvas id="chartRecycle"></canvas></div>
             <div id="ai-recycle" class="hidden bg-purple-50 p-4 rounded-xl border border-purple-100 text-[12.5px] text-gray-700 leading-relaxed shadow-inner"></div>
             <p class="text-[12px] text-center text-[#10b981] font-bold mt-2">เป้าหมาย: รีไซเคิล <span id="note-target"></span>% ของขยะรวม</p>
         </div>
@@ -226,7 +226,7 @@
                     <span class="font-extrabold text-gray-700 text-lg leading-tight">ปริมาณก๊าซ<br><span class="text-[10px] text-gray-400 font-normal">(หน่วย: kgCO2e)</span></span></div>
                 <div class="flex items-center gap-2"><div class="text-right"><div id="val-ghgTotal" class="text-3xl font-black tracking-tighter">-</div><div id="text-ghgTotal" class="text-[10px] font-bold">-</div></div><div id="icon-ghgTotal"></div></div>
             </div>
-            <div class="h-44 w-full"><canvas id="chartGHG"></canvas></div>
+            <div class="h-48 w-full"><canvas id="chartGHG"></canvas></div>
             <div id="ai-ghg" class="hidden bg-gray-50 p-4 rounded-xl border border-gray-200 text-[12.5px] text-gray-700 leading-relaxed shadow-inner"></div>
             <p class="text-[12px] text-center text-[#10b981] font-bold mt-2">เป้าหมาย: ลดลง <span id="note-ghg-target"></span>% จากปีฐาน</p>
         </div>
@@ -372,7 +372,7 @@
             } 
         }
 
-        // ================= 📈 จัดการสีกราฟและการจัดเรียง Layer เส้น =================
+        // ================= 📈 จัดการสีกราฟ สเกลแกน Y และซ่อนสัญลักษณ์เส้นประ =================
         function renderCharts() {
             if(!globalChartData) return;
             const monthVal = document.getElementById('select-month').value;
@@ -383,12 +383,12 @@
             const monthsArr = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
             const mIndex = monthsArr.indexOf(monthVal);
 
-            // โทนสีใหม่ตามที่คุณต้องการ
-            const colorY3 = '#4b5563'; // 2566: เทาเข้ม
-            const colorY2 = '#2563eb'; // 2567: น้ำเงิน
-            const colorY1 = '#eab308'; // 2568: เหลือง
-            const colorCurrent = '#dc2626'; // 2569: แดง
-            const colorTarget = '#dc2626'; // เส้นประ: แดง
+            // สีตามที่สั่งเป๊ะ: 2566(เทาเข้ม), 2567(น้ำเงิน), 2568(เหลือง), 2569(แดง), เส้นประ(แดง)
+            const colorY3 = '#4b5563'; // 2566
+            const colorY2 = '#2563eb'; // 2567
+            const colorY1 = '#eab308'; // 2568
+            const colorCurrent = '#dc2626'; // 2569
+            const colorTarget = '#dc2626'; // เป้าหมาย
 
             function createSmartChart(canvasId, seriesData) {
                 if(!document.getElementById(canvasId)) return;
@@ -424,22 +424,41 @@
                         data: {
                             labels: monthsArr,
                             datasets: [
-                                // order ยิ่งน้อย ยิ่งแสดงอยู่ด้านบนสุด
                                 { label: `ปี ${parseInt(targetYear)-3}`, data: seriesData[String(parseInt(targetYear)-3)], borderColor: colorY3, borderWidth: 2, pointRadius: 0, datalabels: { display: false }, order: 4 },
                                 { label: `ปี ${parseInt(targetYear)-2}`, data: seriesData[String(parseInt(targetYear)-2)], borderColor: colorY2, borderWidth: 2, pointRadius: 0, datalabels: { display: false }, order: 3 },
                                 { label: `ปี ${parseInt(targetYear)-1}`, data: seriesData[String(parseInt(targetYear)-1)], borderColor: colorY1, borderWidth: 2.5, pointRadius: 0, datalabels: { display: false }, order: 2 },
-                                // เส้นปัจจุบัน (สีแดงทึบ)
+                                // ตัวเลขสีแดงสดทับกราฟ (ไม่มีพื้นหลังโปร่งแสง)
                                 { label: `ปี ${targetYear}`, data: actualData, borderColor: colorCurrent, backgroundColor: colorCurrent, borderWidth: 3.5, pointRadius: 4, 
-                                    datalabels: { display: true, align: 'top', offset: 4, color: colorCurrent, backgroundColor: 'rgba(255,255,255,0.75)', borderRadius: 4, font: { family: 'Kanit', size: 9, weight: 'bold' }, formatter: v => v!==null ? v.toLocaleString() : '' }, order: 1 },
-                                // เส้นประเป้าหมาย (สีแดงประ ให้อยู่บนสุด)
+                                    datalabels: { display: true, align: 'top', offset: 4, color: colorCurrent, font: { family: 'Kanit', size: 9, weight: 'bold' }, formatter: v => v!==null ? v.toLocaleString() : '' }, order: 1 },
                                 { label: 'เป้าหมาย (-1%)', data: targetLine, borderColor: colorTarget, borderDash: [5, 5], borderWidth: 2.5, pointRadius: 0, 
-                                    datalabels: { display: true, align: 'bottom', offset: 4, color: colorTarget, backgroundColor: 'rgba(255,255,255,0.75)', borderRadius: 4, font: { family: 'Kanit', size: 9, weight: 'bold' }, formatter: v => v!==null ? v.toLocaleString() : '' }, order: 0 }
+                                    datalabels: { display: true, align: 'bottom', offset: 4, color: colorTarget, font: { family: 'Kanit', size: 9, weight: 'bold' }, formatter: v => v!==null ? v.toLocaleString() : '' }, order: 0 }
                             ]
                         },
                         options: { 
-                            responsive: true, maintainAspectRatio: false, layout: { padding: { top: 15, right: 10, left: 5, bottom: 5 } }, 
-                            plugins: { legend: { display: true, position: 'top', labels: { font: { family: 'Kanit', size: 10 }, boxWidth: 10, usePointStyle: true } }, tooltip: { enabled: false } }, 
-                            scales: { y: { display: false }, x: { ticks: { font: { family: 'Kanit', size: 9 }, color: '#9ca3af' }, grid: { display: false } } } 
+                            responsive: true, maintainAspectRatio: false, layout: { padding: { top: 15, right: 10, left: 0, bottom: 5 } }, 
+                            plugins: { 
+                                legend: { 
+                                    display: true, position: 'top', 
+                                    labels: { 
+                                        font: { family: 'Kanit', size: 10 }, boxWidth: 10, usePointStyle: true,
+                                        filter: function(item, chart) {
+                                            // ซ่อนสัญลักษณ์เส้นประใน Legend (คำว่า 'เป้าหมาย')
+                                            return !item.text.includes('เป้าหมาย'); 
+                                        }
+                                    } 
+                                }, tooltip: { enabled: false } 
+                            }, 
+                            // เปิดสเกลแกน Y ให้เห็นชัดเจนว่าระดับอยู่ที่เท่าไหร่
+                            scales: { 
+                                y: { 
+                                    display: true, 
+                                    ticks: { font: { family: 'Kanit', size: 9 }, color: '#9ca3af', callback: function(value) { return value.toLocaleString(); } },
+                                    grid: { color: '#f3f4f6', drawBorder: false }
+                                }, 
+                                x: { 
+                                    ticks: { font: { family: 'Kanit', size: 9 }, color: '#9ca3af' }, grid: { display: false } 
+                                } 
+                            } 
                         }
                     });
                 } else {
@@ -453,7 +472,16 @@
                         options: { 
                             responsive: true, maintainAspectRatio: false, layout: { padding: { top: 20 } }, 
                             plugins: { legend: { display: false }, tooltip: { enabled: false }, datalabels: { display: true, align: 'end', anchor: 'end', color: '#4b5563', font: { family: 'Kanit', size: 10, weight: 'bold' }, formatter: v => v!==null ? v.toLocaleString() : 'ไม่มีข้อมูล' } }, 
-                            scales: { y: { display: false }, x: { ticks: { font: { family: 'Kanit', size: 11, weight: 'bold' } }, grid: { display: false } } } 
+                            scales: { 
+                                y: { 
+                                    display: true, 
+                                    ticks: { font: { family: 'Kanit', size: 9 }, color: '#9ca3af', callback: function(value) { return value.toLocaleString(); } },
+                                    grid: { color: '#f3f4f6', drawBorder: false }
+                                }, 
+                                x: { 
+                                    ticks: { font: { family: 'Kanit', size: 11, weight: 'bold' } }, grid: { display: false } 
+                                } 
+                            } 
                         }
                     });
                 }
