@@ -15,7 +15,6 @@
         .text-gradient-green { background: linear-gradient(to bottom right, #10b981, #047857); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .music-toggle { position: fixed; bottom: 20px; right: 20px; background: white; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer; z-index: 50; font-size: 24px; transition: transform 0.3s; }
         .music-toggle:hover { transform: scale(1.1); }
-        /* Fix Box Sizing สำหรับปุ่ม Tab ป้องกันการกระตุก */
         .tab-btn { box-sizing: border-box; border-width: 2px; }
     </style>
 </head>
@@ -25,9 +24,10 @@
     <audio id="bgMusic" loop><source src="music.mp3" type="audio/mpeg"></audio>
     <div id="musicBtn" class="music-toggle" onclick="toggleMusic()" title="เปิด/ปิดเพลง">🔇</div>
 
-    <!-- เมนู Tabs (4 แท็บ ยุบรวมกราฟ) - เพิ่มคลาส tab-btn ควบคุมขนาดให้คงที่ -->
+    <!-- เมนู Tabs -->
     <div class="w-full max-w-lg mb-5 grid grid-cols-2 sm:flex sm:flex-wrap gap-2 text-[13px] sm:text-[14px] font-bold">
-        <button id="tab-exec" onclick="switchTab('exec')" class="tab-btn col-span-2 sm:col-span-1 flex-1 bg-gradient-to-r from-blue-700 to-blue-900 text-white py-3 rounded-2xl shadow-md border-blue-500 transition-all">🏆 ผลการดำเนินงานภาพรวม</button>
+        <!-- แก้ไขชื่อปุ่มเป็น "บทสรุปผล" -->
+        <button id="tab-exec" onclick="switchTab('exec')" class="tab-btn col-span-2 sm:col-span-1 flex-1 bg-gradient-to-r from-blue-700 to-blue-900 text-white py-3 rounded-2xl shadow-md border-blue-500 transition-all">🏆 บทสรุปผล</button>
         <button id="tab-energy" onclick="switchTab('energy')" class="tab-btn flex-1 bg-white text-gray-500 hover:text-gray-700 py-3 rounded-2xl shadow-sm border-transparent transition-all">⚡ พลังงาน</button>
         <button id="tab-waste" onclick="switchTab('waste')" class="tab-btn flex-1 bg-white text-gray-500 hover:text-gray-700 py-3 rounded-2xl shadow-sm border-transparent transition-all">♻ ของเสีย</button>
         <button id="tab-ghg" onclick="switchTab('ghg')" class="tab-btn flex-1 bg-white text-gray-500 hover:text-gray-700 py-3 rounded-2xl shadow-sm border-transparent transition-all">☁️ ก๊าซเรือนกระจก</button>
@@ -47,17 +47,15 @@
         </button>
     </div>
 
-    <!-- 🌟 หน้าจอ Welcome Screen (หน้าจอเริ่มต้น) -->
+    <!-- 🌟 หน้าจอ Welcome Screen -->
     <div id="welcome-screen" class="w-full max-w-lg mt-2">
         <div class="flex flex-col items-center justify-center bg-white rounded-[2.5rem] shadow-[0_20px_40px_rgba(0,0,0,0.08)] p-8 sm:p-10 border border-gray-100 text-center relative overflow-hidden">
-            <!-- ตกแต่งฉากหลัง -->
             <div class="absolute top-0 right-0 w-32 h-32 bg-green-100 rounded-full mix-blend-multiply filter blur-2xl opacity-70 transform translate-x-10 -translate-y-10"></div>
             <div class="absolute bottom-0 left-0 w-32 h-32 bg-blue-100 rounded-full mix-blend-multiply filter blur-2xl opacity-70 transform -translate-x-10 translate-y-10"></div>
             
             <img src="https://i.postimg.cc/BnxKQyWx/LINE-ALBUM-New-logo-221018.jpg" alt="โลโก้" class="h-28 w-auto mb-4 object-contain drop-shadow-md relative z-10">
             <h2 class="text-3xl font-black text-gray-800 relative z-10">สำนักงานไปรษณีย์เขต 3</h2>
             
-            <!-- สโลแกน -->
             <div class="bg-green-50 border border-green-200 rounded-2xl p-4 mt-4 mb-2 relative z-10 shadow-sm">
                 <p class="text-[13px] sm:text-[15px] text-green-700 font-bold italic leading-relaxed">
                     "รู้รักษ์สิ่งแวดล้อม รู้ถนอมพลังงาน<br>รู้ใช้พอประมาณ รักษาองค์กรสีเขียวให้ยั่งยืน"
@@ -73,27 +71,27 @@
         </div>
     </div>
 
-    <!-- ⏳ หน้าต่างกำลังโหลด (Loading Screen) -->
+    <!-- ⏳ หน้าต่างกำลังโหลด -->
     <div id="loading" class="hidden w-full max-w-lg mt-2 text-center bg-white rounded-[2.5rem] shadow-xl p-8 sm:p-10 border border-gray-100 relative overflow-hidden">
-        <!-- ฉากหลังโหลดดิ้ง -->
         <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-300 via-green-300 to-blue-300 animate-pulse"></div>
-
         <img src="https://i.postimg.cc/BnxKQyWx/LINE-ALBUM-New-logo-221018.jpg" alt="โลโก้" class="h-20 mx-auto mb-3 object-contain drop-shadow-md opacity-90">
         <h2 class="text-2xl font-extrabold text-gray-800">สำนักงานไปรษณีย์เขต 3</h2>
         <p class="text-[12px] sm:text-[13px] text-green-600 font-bold mt-2 italic mb-6">"รู้รักษ์สิ่งแวดล้อม รู้ถนอมพลังงาน<br>รู้ใช้พอประมาณ รักษาองค์กรสีเขียวให้ยั่งยืน"</p>
-        
         <div class="animate-spin inline-block w-12 h-12 border-[4px] border-current border-t-transparent text-blue-600 rounded-full mb-4"></div>
         <p class="font-bold text-[#3b719f] animate-pulse text-sm sm:text-base">กำลังดึงข้อมูลและให้ AI วิเคราะห์...</p>
     </div>
-
     <div id="error-msg" class="text-red-600 font-bold bg-red-100 p-4 rounded-xl w-full max-w-lg text-center hidden mb-4 mt-2"></div>
 
-    <!-- ==================== DASHBOARD: 1. ผลการดำเนินงานภาพรวม ==================== -->
+    <!-- ==================== DASHBOARD: 1. บทสรุปผล ==================== -->
     <div id="dashboard-exec" class="hidden bg-white rounded-[2.5rem] shadow-[0_20px_40px_rgba(0,0,0,0.08)] w-full max-w-lg p-6 sm:p-8 space-y-6 border border-white">
         <div class="text-center mb-4 border-b border-gray-100 pb-5">
             <img src="https://i.postimg.cc/BnxKQyWx/LINE-ALBUM-New-logo-221018.jpg" alt="โลโก้" class="h-20 mx-auto mb-3 object-contain drop-shadow-md">
             <h2 class="text-2xl font-extrabold text-gray-800">สำนักงานไปรษณีย์เขต 3</h2>
-            <p class="text-[15px] text-[#3b719f] font-bold mt-1">สรุปผลการดำเนินงานภาพรวม</p>
+            <p class="text-[12px] text-green-600 font-bold mt-1 italic">"รู้รักษ์สิ่งแวดล้อม รู้ถนอมพลังงาน รู้ใช้พอประมาณ รักษาองค์กรสีเขียวให้ยั่งยืน"</p>
+            <div class="w-16 h-1 bg-gray-200 rounded-full mx-auto my-3"></div>
+            
+            <!-- เปลี่ยนชื่อที่แสดงเป็น บทสรุปผล -->
+            <h3 class="text-[16px] text-[#3b719f] font-bold mt-1">บทสรุปผลการดำเนินงาน</h3>
             <p class="display-month-year text-sm text-gray-500 font-semibold mt-2">กรุณากดเรียกดูข้อมูล</p>
         </div>
 
@@ -126,11 +124,19 @@
         </div>
     </div>
 
-    <!-- ==================== DASHBOARD: 2. พลังงาน (รวม % + กราฟ + AI) ==================== -->
+    <!-- ==================== DASHBOARD: 2. พลังงาน ==================== -->
     <div id="dashboard-energy" class="hidden bg-white rounded-[2.5rem] shadow-[0_20px_40px_rgba(0,0,0,0.08)] w-full max-w-lg p-5 sm:p-8 space-y-6 border border-white">
-        <div class="text-center mb-2">
-            <h2 class="text-2xl font-extrabold text-gray-800">การใช้ทรัพยากรพลังงาน</h2>
+        <!-- เพิ่มส่วนหัว โลโก้ + สโลแกน ในแท็บนี้ -->
+        <div class="text-center mb-5 border-b border-gray-100 pb-5">
+            <img src="https://i.postimg.cc/BnxKQyWx/LINE-ALBUM-New-logo-221018.jpg" alt="โลโก้" class="h-16 mx-auto mb-2 object-contain drop-shadow-md">
+            <h2 class="text-xl font-extrabold text-gray-800">สำนักงานไปรษณีย์เขต 3</h2>
+            <p class="text-[11px] sm:text-[12px] text-green-600 font-bold mt-1 italic">"รู้รักษ์สิ่งแวดล้อม รู้ถนอมพลังงาน รู้ใช้พอประมาณ รักษาองค์กรสีเขียวให้ยั่งยืน"</p>
+            <div class="w-12 h-1 bg-gray-200 rounded-full mx-auto my-3"></div>
+            
+            <h3 class="text-2xl font-extrabold text-gray-800">การใช้ทรัพยากรพลังงาน</h3>
             <h1 class="display-month-year text-xl font-bold text-[#e10b17] mt-1 drop-shadow-sm tracking-wide">...</h1>
+            <!-- เพิ่มข้อความเปรียบเทียบ -->
+            <p class="display-compare-text text-[12px] sm:text-[13px] text-gray-500 font-medium mt-1">...</p>
         </div>
 
         <div class="neo-card p-5 space-y-3">
@@ -174,11 +180,18 @@
         </div>
     </div>
 
-    <!-- ==================== DASHBOARD: 3. ของเสีย (รวม % + กราฟ + AI) ==================== -->
+    <!-- ==================== DASHBOARD: 3. ของเสีย ==================== -->
     <div id="dashboard-waste" class="hidden bg-white rounded-[2.5rem] shadow-[0_20px_40px_rgba(0,0,0,0.08)] w-full max-w-lg p-5 sm:p-8 space-y-6 border border-white">
-        <div class="text-center mb-2">
-            <h2 class="text-2xl font-extrabold text-gray-800">การจัดการของเสีย</h2>
+        <!-- เพิ่มส่วนหัว โลโก้ + สโลแกน ในแท็บนี้ -->
+        <div class="text-center mb-5 border-b border-gray-100 pb-5">
+            <img src="https://i.postimg.cc/BnxKQyWx/LINE-ALBUM-New-logo-221018.jpg" alt="โลโก้" class="h-16 mx-auto mb-2 object-contain drop-shadow-md">
+            <h2 class="text-xl font-extrabold text-gray-800">สำนักงานไปรษณีย์เขต 3</h2>
+            <p class="text-[11px] sm:text-[12px] text-green-600 font-bold mt-1 italic">"รู้รักษ์สิ่งแวดล้อม รู้ถนอมพลังงาน รู้ใช้พอประมาณ รักษาองค์กรสีเขียวให้ยั่งยืน"</p>
+            <div class="w-12 h-1 bg-gray-200 rounded-full mx-auto my-3"></div>
+            
+            <h3 class="text-2xl font-extrabold text-gray-800">การจัดการของเสีย</h3>
             <h1 class="display-month-year text-xl font-bold text-[#e10b17] mt-1 drop-shadow-sm tracking-wide">...</h1>
+            <p class="display-compare-text text-[12px] sm:text-[13px] text-gray-500 font-medium mt-1">...</p>
         </div>
 
         <div class="neo-card p-5 space-y-3">
@@ -203,11 +216,18 @@
         </div>
     </div>
 
-    <!-- ==================== DASHBOARD: 4. ก๊าซเรือนกระจก (รวม % + กราฟ + AI) ==================== -->
+    <!-- ==================== DASHBOARD: 4. ก๊าซเรือนกระจก ==================== -->
     <div id="dashboard-ghg" class="hidden bg-white rounded-[2.5rem] shadow-[0_20px_40px_rgba(0,0,0,0.08)] w-full max-w-lg p-5 sm:p-8 space-y-6 border border-white">
-        <div class="text-center mb-2">
-            <h2 class="text-2xl font-extrabold text-gray-800">การปล่อยก๊าซเรือนกระจก</h2>
+        <!-- เพิ่มส่วนหัว โลโก้ + สโลแกน ในแท็บนี้ -->
+        <div class="text-center mb-5 border-b border-gray-100 pb-5">
+            <img src="https://i.postimg.cc/BnxKQyWx/LINE-ALBUM-New-logo-221018.jpg" alt="โลโก้" class="h-16 mx-auto mb-2 object-contain drop-shadow-md">
+            <h2 class="text-xl font-extrabold text-gray-800">สำนักงานไปรษณีย์เขต 3</h2>
+            <p class="text-[11px] sm:text-[12px] text-green-600 font-bold mt-1 italic">"รู้รักษ์สิ่งแวดล้อม รู้ถนอมพลังงาน รู้ใช้พอประมาณ รักษาองค์กรสีเขียวให้ยั่งยืน"</p>
+            <div class="w-12 h-1 bg-gray-200 rounded-full mx-auto my-3"></div>
+            
+            <h3 class="text-2xl font-extrabold text-gray-800">การปล่อยก๊าซเรือนกระจก</h3>
             <h1 class="display-month-year text-xl font-bold text-[#e10b17] mt-1 drop-shadow-sm tracking-wide">...</h1>
+            <p class="display-compare-text text-[12px] sm:text-[13px] text-gray-500 font-medium mt-1">...</p>
         </div>
 
         <div class="neo-card p-5 space-y-3">
@@ -238,7 +258,6 @@
         function switchTab(tabName) {
             currentTab = tabName;
             
-            // ใช้ border-transparent กับปุ่มที่ไม่ได้เลือก เพื่อไม่ให้ขนาดกล่องเปลี่ยน
             const btnActive = 'tab-btn flex-1 bg-gradient-to-r from-red-600 to-[#e10b17] text-white py-3 rounded-2xl shadow-lg border-red-500 transition-all font-bold';
             const btnExecActive = 'tab-btn col-span-2 sm:col-span-1 flex-1 bg-gradient-to-r from-blue-700 to-blue-900 text-white py-3 rounded-2xl shadow-lg border-blue-500 transition-all font-bold';
             const btnInactive = 'tab-btn flex-1 bg-white text-gray-500 hover:text-gray-700 py-3 rounded-2xl shadow-sm border-transparent transition-all font-bold';
@@ -295,12 +314,21 @@
             globalChartData = data.chartData;
             if(currentTab === '') switchTab('exec'); else switchTab(currentTab);
             
-            const displayMonth = data.month === "ทั้งปี" ? "รวมตลอดปี" : data.month;
-            document.querySelectorAll('.display-month-year').forEach(el => el.innerText = `${displayMonth} ${data.year}`);
-            if(document.getElementById('note-target')) document.getElementById('note-target').innerText = (data.year >= 2568) ? "50" : "45";
+            // สร้างข้อความสำหรับการแสดงผล
+            const displayMonthTitle = data.month === "ทั้งปี" ? "รวมตลอดปี" : data.month;
+            const displayMonthCompare = data.month === "ทั้งปี" ? "รวมตลอดปี" : `เดือน ${data.month}`;
+            const targetYear = parseInt(data.year);
+            const prevYear = targetYear - 1;
+            
+            // อัปเดต Title
+            document.querySelectorAll('.display-month-year').forEach(el => el.innerText = `${displayMonthTitle} ${targetYear}`);
+            // อัปเดตข้อความเปรียบเทียบ
+            const compareString = `(เทียบกับผลการดำเนินงาน ${displayMonthCompare} ${prevYear})`;
+            document.querySelectorAll('.display-compare-text').forEach(el => el.innerText = compareString);
+            
+            if(document.getElementById('note-target')) document.getElementById('note-target').innerText = (targetYear >= 2568) ? "50" : "45";
             if(document.getElementById('note-ghg-target') && !data.ghg.error) document.getElementById('note-ghg-target').innerText = data.ghg.target;
 
-            // ผูกข้อความวิเคราะห์ AI
             const setAnalysis = (keyword, elementId) => {
                 const container = document.getElementById(elementId);
                 if(!container) return;
@@ -356,14 +384,13 @@
             const monthsArr = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
             const mIndex = monthsArr.indexOf(monthVal);
 
-            function createSmartChart(canvasId, mainColor, seriesData, unitText) {
+            function createSmartChart(canvasId, mainColor, seriesData) {
                 if(!document.getElementById(canvasId)) return;
                 if(chartsInstance[canvasId]) chartsInstance[canvasId].destroy();
                 
                 const ctx = document.getElementById(canvasId).getContext('2d');
                 
                 if (isFullYear) {
-                    // กราฟเส้น 12 เดือน
                     chartsInstance[canvasId] = new Chart(ctx, {
                         type: 'line', plugins: [ChartDataLabels],
                         data: {
@@ -382,17 +409,12 @@
                         }
                     });
                 } else {
-                    // กราฟแท่ง เทียบเฉพาะเดือนที่เลือกของแต่ละปี
                     const barData = [ seriesData['2566'][mIndex], seriesData['2567'][mIndex], seriesData['2568'][mIndex], seriesData['2569'][mIndex] ];
                     chartsInstance[canvasId] = new Chart(ctx, {
                         type: 'bar', plugins: [ChartDataLabels],
                         data: {
                             labels: ['ปี 2566', 'ปี 2567', 'ปี 2568', 'ปี 2569'],
-                            datasets: [{
-                                data: barData,
-                                backgroundColor: ['#9ca3af', '#f59e0b', '#3b82f6', mainColor],
-                                borderRadius: 4
-                            }]
+                            datasets: [{ data: barData, backgroundColor: ['#9ca3af', '#f59e0b', '#3b82f6', mainColor], borderRadius: 4 }]
                         },
                         options: { 
                             responsive: true, maintainAspectRatio: false, layout: { padding: { top: 20 } }, 
