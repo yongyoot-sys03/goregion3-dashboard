@@ -189,7 +189,7 @@
             <div class="display-forecast-text hidden mt-3">
                 <p class="text-[11px] text-gray-600 font-bold bg-gray-50 px-4 py-2 rounded-xl inline-block border border-gray-200 text-left leading-relaxed">
                     <span class="text-red-500">🔴 เส้นประสีแดง:</span> คาดการณ์ความน่าจะเป็น (อ้างอิงอัตราส่วนปัจจุบัน)<br>
-                    <span class="text-green-600">🟢 เส้นประสีเขียว:</span> เป้าหมายที่ต้องควบคุม (หรือเกณฑ์ขั้นต่ำ)
+                    <span class="text-green-600">🟢 เส้นประสีเขียว:</span> เป้าหมายขั้นต่ำ (50% ของขยะรวม)
                 </p>
             </div>
         </div>
@@ -283,6 +283,7 @@
             }
         }
 
+        // ============ 📌 ใส่ URL ของ Google Apps Script ที่นี่ ============
         const API_URL = "https://script.google.com/macros/s/AKfycbwKnN-tuvcZDwuwl1Wf-Efl7kLLkf8cIhSa79GEeYvVmi3bz7ueh3uTLWko_px3ACKKcQ/exec"; 
 
         function fetchData() {
@@ -386,7 +387,7 @@
             } 
         }
 
-        // ================= 📈 วาดกราฟเส้นประเขียว/แดง และพยากรณ์ =================
+        // ================= 📈 วาดกราฟเส้นประเขียว/แดง และพยากรณ์ (อัปเดตรีไซเคิล) =================
         function renderCharts() {
             if(!globalChartData) return;
             const monthVal = document.getElementById('select-month').value;
@@ -401,8 +402,8 @@
             const colorY2 = '#2563eb'; 
             const colorY1 = '#eab308'; 
             const colorCurrent = '#dc2626'; 
-            const colorForecast = '#ef4444'; // เส้นประแดง
-            const colorTarget = '#10b981'; // เส้นประเขียว
+            const colorForecast = '#ef4444'; 
+            const colorTarget = '#10b981'; 
 
             function createSmartChart(canvasId, seriesData) {
                 if(!document.getElementById(canvasId)) return;
@@ -438,12 +439,14 @@
                         }
                     }
 
-                    // สร้างเส้นประเป้าหมายสีเขียว (Target Line)
+                    // อัปเดตการวาดเส้นประสีเขียวสำหรับ "ขยะรีไซเคิล" ให้ดึงยอดรวมที่แท้จริง
                     if (canvasId === 'chartRecycle') {
                         let targetPct = parseInt(targetYear) >= 2568 ? 0.50 : 0.45;
+                        let totalWasteSeries = globalChartData.totalWaste[targetYear] || new Array(12).fill(0);
+                        
                         for(let i = 0; i < 12; i++) {
                             if (i <= lastValidIndex) {
-                                let totalW = (globalChartData.waste[targetYear][i] || 0) + (actualData[i] || 0);
+                                let totalW = totalWasteSeries[i] || 0;
                                 targetLine[i] = Math.round(totalW * targetPct);
                             } else if (lastValidIndex !== -1) {
                                 targetLine[i] = targetLine[lastValidIndex]; 
@@ -454,137 +457,246 @@
                             let pVal = prevData[i] || 0;
                             targetLine[i] = pVal > 0 ? Math.round(pVal * 0.99) : (i > 0 ? targetLine[i-1] : null);
                         }
-                    }
+                    }คุณสังเกตได้เฉียบขาดมากครับ! สาเหตุที่คุณรู้สึกว่าการคำนวณในกราฟอาจจะไม่เป๊ะ เป็นเพราะ **"เส้นประสีเขียวบนกราฟ"** ในเวอร์ชันก่อนหน้า มีจุดบกพร่องเล็กน้อยจริงๆ ครับ
 
-                    chartsInstance[canvasId] = new Chart(ctx, {
-                        type: 'line', plugins: [ChartDataLabels],
-                        data: {
-                            labels: monthsArr,
-                            datasets: [
-                                { label: `ปี ${parseInt(targetYear)-3}`, data: seriesData[String(parseInt(targetYear)-3)], borderColor: colorY3, borderWidth: 2, pointRadius: 0, datalabels: { display: false }, order: 6 },
-                                { label: `ปี ${parseInt(targetYear)-2}`, data: seriesData[String(parseInt(targetYear)-2)], borderColor: colorY2, borderWidth: 2, pointRadius: 0, datalabels: { display: false }, order: 5 },
-                                { label: `ปี ${parseInt(targetYear)-1}`, data: seriesData[String(parseInt(targetYear)-1)], borderColor: colorY1, borderWidth: 2.5, pointRadius: 0, datalabels: { display: false }, order: 4 },
-                                
-                                { 
-                                    label: `ปี ${targetYear}`, data: actualData, borderColor: colorCurrent, backgroundColor: colorCurrent, borderWidth: 3.5, pointRadius: 4, 
-                                    datalabels: { 
-                                        display: true, align: 'bottom', anchor: 'bottom', offset: 6, color: colorCurrent, 
-                                        font: { family: 'Kanit', size: 10, weight: 'bold' }, 
-                                        textStrokeColor: '#ffffff', textStrokeWidth: 4, 
-                                        formatter: v => v!==null ? v.toLocaleString() : '' 
-                                    }, 
-                                    order: 2 
-                                },
-                                { 
-                                    label: 'คาดการณ์ (สถิติ)', data: forecastLine, borderColor: colorForecast, backgroundColor: colorForecast, borderDash: [5, 5], borderWidth: 2.5, pointRadius: 4, 
-                                    datalabels: { 
-                                        display: true, align: 'bottom', anchor: 'bottom', offset: 6, color: colorForecast, 
-                                        font: { family: 'Kanit', size: 10, weight: 'bold' }, 
-                                        textStrokeColor: '#ffffff', textStrokeWidth: 4, 
-                                        formatter: (v, ctx) => {
-                                            if(v === null) return '';
-                                            if(ctx.dataIndex === lastValidIndex) return ''; 
-                                            return v.toLocaleString();
-                                        }
-                                    }, 
-                                    order: 1 // ลอยทับเส้นอื่นทั้งหมด
-                                },
-                                { 
-                                    label: canvasId === 'chartRecycle' ? 'เป้าหมาย (ขั้นต่ำ)' : 'เป้าหมาย (-1%)', 
-                                    data: targetLine, borderColor: colorTarget, borderDash: [4, 4], borderWidth: 2, pointRadius: 0, 
-                                    datalabels: { display: false }, 
-                                    order: 3 
-                                }
-                            ]
-                        },
-                        options: { 
-                            responsive: true, maintainAspectRatio: false, layout: { padding: { top: 15, right: 10, left: 0, bottom: 5 } }, 
-                            plugins: { 
-                                legend: { 
-                                    display: true, position: 'top', 
-                                    reverse: true,
-                                    labels: { 
-                                        font: { family: 'Kanit', size: 10 }, boxWidth: 10, usePointStyle: true,
-                                        filter: function(item, chart) { 
-                                            return !item.text.includes('เป้าหมาย') && !item.text.includes('คาดการณ์'); 
-                                        }
-                                    } 
-                                }, tooltip: { enabled: false } 
-                            }, 
-                            scales: { 
-                                y: { 
-                                    display: true, 
-                                    ticks: { font: { family: 'Kanit', size: 9 }, color: '#9ca3af', callback: function(value) { return value.toLocaleString(); } },
-                                    grid: { color: '#f3f4f6', drawBorder: false }
-                                }, 
-                                x: { 
-                                    ticks: { font: { family: 'Kanit', size: 9 }, color: '#9ca3af' }, grid: { display: false } 
-                                } 
-                            } 
-                        }
-                    });
-                } else {
-                    const barData = [ seriesData[String(parseInt(targetYear)-3)][mIndex], seriesData[String(parseInt(targetYear)-2)][mIndex], seriesData[String(parseInt(targetYear)-1)][mIndex], seriesData[targetYear][mIndex] ];
-                    chartsInstance[canvasId] = new Chart(ctx, {
-                        type: 'bar', plugins: [ChartDataLabels],
-                        data: {
-                            labels: [`ปี ${parseInt(targetYear)-3}`, `ปี ${parseInt(targetYear)-2}`, `ปี ${parseInt(targetYear)-1}`, `ปี ${targetYear}`],
-                            datasets: [{ data: barData, backgroundColor: [colorY3, colorY2, colorY1, colorCurrent], borderRadius: 4 }]
-                        },
-                        options: { 
-                            responsive: true, maintainAspectRatio: false, layout: { padding: { top: 20 } }, 
-                            plugins: { legend: { display: false }, tooltip: { enabled: false }, datalabels: { display: true, align: 'end', anchor: 'end', color: '#4b5563', font: { family: 'Kanit', size: 10, weight: 'bold' }, formatter: v => v!==null ? v.toLocaleString() : 'ไม่มีข้อมูล' } }, 
-                            scales: { 
-                                y: { 
-                                    display: true, 
-                                    ticks: { font: { family: 'Kanit', size: 9 }, color: '#9ca3af', callback: function(value) { return value.toLocaleString(); } },
-                                    grid: { color: '#f3f4f6', drawBorder: false }
-                                }, 
-                                x: { 
-                                    ticks: { font: { family: 'Kanit', size: 11, weight: 'bold' } }, grid: { display: false } 
-                                } 
-                            } 
-                        }
-                    });
-                }
-            }
-            if(currentTab === 'energy') {
-                createSmartChart('chartPower', globalChartData.power);
-                createSmartChart('chartOil', globalChartData.oil);
-                createSmartChart('chartWater', globalChartData.water);
-                createSmartChart('chartPaper', globalChartData.paper);
-            }
-            if(currentTab === 'waste') {
-                createSmartChart('chartGenWaste', globalChartData.waste);
-                createSmartChart('chartRecycle', globalChartData.recycle);
-            }
-            if(currentTab === 'ghg') {
-                createSmartChart('chartGHG', globalChartData.ghg);
-            }
-        }
+**สาเหตุคือ:** 
+เปอร์เซ็นต์ตัวใหญ่ด้านบนการ์ด (เช่น 59.64%) คำนวณถูกต้องแล้วโดยดึงค่าจากคอลัมน์ **"ขยะรวมทั้งหมด_กก" (คอลัมน์ F)** โดยตรง[cite: 17]
+แต่... **ตัวเส้นประสีเขียวบนกราฟ** โค้ดเดิมดึงข้อมูลมาแค่ (ขยะทั่วไป + ขยะรีไซเคิล) โดยเผลอ **"ตกหล่นขยะอันตราย" (คอลัมน์ D)** ไปครับ ทำให้ฐานการคำนวณเส้นประสีเขียวต่ำกว่าความเป็นจริงไปเล็กน้อย[cite: 17]
 
-        function downloadImage() {
-            const dashboard = document.getElementById(`dashboard-${currentTab}`);
-            const btn = document.getElementById('btn-download');
-            const originalContent = btn.innerHTML;
-            btn.innerHTML = '⏳ กำลังบันทึก...';
-            document.getElementById('musicBtn').style.display = 'none';
-            html2canvas(dashboard, { scale: 2, useCORS: true, backgroundColor: "#f0f4f8" }).then(canvas => {
-                const link = document.createElement('a');
-                const month = document.getElementById('select-month').value;
-                const year = document.getElementById('select-year').value;
-                let typeName = currentTab === 'energy' ? 'พลังงาน' : (currentTab === 'waste' ? 'ของเสีย' : 'ก๊าซเรือนกระจก');
-                link.download = `รายงาน${typeName}_${month}_${year}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-                btn.innerHTML = originalContent;
-                document.getElementById('musicBtn').style.display = 'flex';
-            }).catch(error => {
-                alert('เกิดข้อผิดพลาด, กรุณาลองใหม่อีกครั้ง');
-                btn.innerHTML = originalContent;
-                document.getElementById('musicBtn').style.display = 'flex';
-            });
+ผมได้แก้ไขให้ระบบดึงค่า **"ขยะรวมทั้งหมด_กก" (คอลัมน์ F)** จาก Google Sheet มาวาดเส้นประสีเขียวโดยตรงแล้วครับ[cite: 17] เพื่อให้ตรงกับตารางของคุณ 100% 
+
+รบกวนอัปเดตโค้ดทั้ง 2 ฝั่งเป็นเวอร์ชันที่สมบูรณ์ที่สุดตามนี้ครับ:
+
+### 🛠️ 1. อัปเดตฝั่งหลังบ้าน `Code.gs` (เพิ่มการดึงคอลัมน์ขยะรวมทั้งหมด)
+*(นำไปวางทับในไฟล์ `Code.gs` แล้วกด Deploy > Manage deployments > รูปดินสอ > New version > Deploy)*
+
+```javascript
+function doGet(e) {
+  let year = e.parameter.year || 2569;
+  let month = e.parameter.month || "มกราคม";
+  let resultData = getAllData(parseInt(year), month);
+  return ContentService.createTextOutput(JSON.stringify(resultData)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function extractYearlySeries(data, valCol) {
+  let months = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+  let series = { '2566': new Array(12).fill(null), '2567': new Array(12).fill(null), '2568': new Array(12).fill(null), '2569': new Array(12).fill(null) };
+  if(!data) return series;
+  for (let i = 1; i < data.length; i++) {
+    let year = String(data[i][0]).trim();
+    let month = String(data[i][1]).trim();
+    if (series[year] !== undefined) {
+      let mIndex = months.indexOf(month);
+      if (mIndex !== -1) {
+        let cellVal = parseFloat(data[i][valCol]);
+        if (!isNaN(cellVal)) series[year][mIndex] = (series[year][mIndex] || 0) + cellVal;
+      }
+    }
+  }
+  return series;
+}
+
+function sumArray(arr) {
+  if (!arr) return 0;
+  return arr.reduce((a, b) => a + (Number(b) || 0), 0);
+}
+
+function getHistoricalTrend(seriesData, targetYear) {
+  let y1 = String(targetYear - 3); 
+  let y2 = String(targetYear - 2); 
+  let y3 = String(targetYear - 1); 
+  
+  let sum1 = sumArray(seriesData[y1]);
+  let sum2 = sumArray(seriesData[y2]);
+  let sum3 = sumArray(seriesData[y3]);
+
+  let trends = [];
+  if (sum1 > 0 && sum2 > 0) {
+    let diff = ((sum2 - sum1) / sum1) * 100;
+    trends.push(`ปี ${y2} (${diff > 0 ? 'เพิ่มขึ้น' : 'ลดลง'} ${Math.abs(diff).toFixed(2)}%)`);
+  }
+  if (sum2 > 0 && sum3 > 0) {
+    let diff = ((sum3 - sum2) / sum2) * 100;
+    trends.push(`ปี ${y3} (${diff > 0 ? 'เพิ่มขึ้น' : 'ลดลง'} ${Math.abs(diff).toFixed(2)}%)`);
+  }
+  
+  return trends.length > 0 ? trends.join(" ➔ ") : "ไม่มีข้อมูลเพียงพอ";
+}
+
+function handleAIAnalysis(metrics, chartData, targetYear) {
+  let results = [];
+
+  const generateText = (category, changeStr, status, seriesData) => {
+    let cause = "", action = "";
+    let isRed = status === "red";
+    let trendHistory = getHistoricalTrend(seriesData, targetYear);
+    
+    let ytdCurrent = 0, ytdPrev = 0;
+    let lastValidIndex = -1;
+    let prevYearStr = String(targetYear - 1);
+    
+    for(let i=0; i<12; i++) {
+        if(seriesData[String(targetYear)][i] !== null && seriesData[String(targetYear)][i] > 0) {
+            lastValidIndex = i;
+            ytdCurrent += seriesData[String(targetYear)][i];
+            ytdPrev += seriesData[prevYearStr][i] || 0;
         }
-    </script>
-</body>
-</html>
+    }
+    
+    let ratio = ytdPrev > 0 ? ytdCurrent / ytdPrev : 1;
+    let futureForecastText = "";
+
+    if(lastValidIndex !== -1 && lastValidIndex < 11) {
+        let sumForecast = 0, sumTarget = 0;
+        let endIdx = Math.min(11, lastValidIndex + 3);
+        
+        for(let i = lastValidIndex + 1; i <= endIdx; i++) {
+            let pVal = seriesData[prevYearStr][i] || 0;
+            sumForecast += pVal * ratio;
+            sumTarget += pVal * 0.99;
+        }
+        
+        if (category !== "ขยะรีไซเคิล") {
+            if(sumForecast > sumTarget) {
+                futureForecastText = `🚨 แนวโน้ม 3 เดือนข้างหน้า: คาดการณ์ความน่าจะเป็นว่าปริมาณการใช้จะ "สูงกว่าเป้าหมาย 1%" (ประเมินจากสถิติปัจจุบันเทียบปีก่อน) ขอให้หน่วยงานคุมเข้มมาตรการอย่างเร่งด่วน`;
+            } else {
+                futureForecastText = `🌟 แนวโน้ม 3 เดือนข้างหน้า: คาดการณ์ความน่าจะเป็นว่าปริมาณการใช้จะ "ต่ำกว่าเป้าหมาย 1%" (อยู่ในเกณฑ์ดีตามเป้าหมาย) ขอให้รักษามาตรฐานนี้ไว้อย่างต่อเนื่อง`;
+            }
+        } else {
+            futureForecastText = `♻️ แนวโน้ม 3 เดือนข้างหน้า: คาดการณ์ว่าสัดส่วนรีไซเคิลจะรักษาระดับการจัดการได้ตามสถิติปัจจุบัน ขอให้รณรงค์อย่างต่อเนื่อง`;
+        }
+    }
+
+    if (category === "ไฟฟ้า") {
+      cause = isRed ? `พบการใช้ไฟฟ้าเพิ่มขึ้น ${changeStr} ปัจจัยหลักอาจเกิดจากสภาวะอากาศร้อนจัด ทำให้ระบบปรับอากาศทำงานหนัก หรือมีการใช้อุปกรณ์สำนักงานเพิ่มขึ้น` : `การใช้ไฟฟ้าลดลง ${changeStr} สะท้อนความร่วมมือในการประหยัดพลังงานและการบำรุงรักษาระบบปรับอากาศที่ดี`;
+      action = isRed ? "- ควบคุมอุณหภูมิแอร์ที่ 26 องศาเซลเซียส\n- รณรงค์ปิดหน้าจอคอมพิวเตอร์และไฟแสงสว่างช่วงพักเที่ยง" : "- รักษาระดับมาตรฐานการประหยัดพลังงาน\n- พิจารณาเปลี่ยนอุปกรณ์ไฟฟ้าเป็นเทคโนโลยีประหยัดพลังงาน (Inverter/LED)";
+    } else if (category === "น้ำมันเชื้อเพลิง") {
+      cause = isRed ? `การใช้น้ำมันเชื้อเพลิงเพิ่มขึ้น ${changeStr} สืบเนื่องจากการปฏิบัติภารกิจนอกพื้นที่ การขนส่ง หรือการลงพื้นที่ที่เพิ่มสูงขึ้น` : `การใช้น้ำมันเชื้อเพลิงลดลง ${changeStr} เกิดจากการวางแผนเส้นทางร่วมกัน (Carpool) และการใช้ระบบประชุมออนไลน์`;
+      action = isRed ? "- ส่งเสริมการเดินทางร่วมกัน (Carpool)\n- ใช้ระบบ Video Conference แทนการเดินทางหากทำได้" : "- ดำเนินมาตรการ Carpool อย่างต่อเนื่อง\n- ตรวจเช็คสภาพเครื่องยนต์ตามระยะเวลาที่กำหนด";
+    } else if (category === "น้ำประปา") {
+      cause = isRed ? `ปริมาณใช้น้ำประปาเพิ่มขึ้น ${changeStr} อาจมาจากการชำรุดรั่วซึมของสุขภัณฑ์ ก๊อกน้ำ หรือกิจกรรมทำความสะอาดอาคารสถานที่ที่มากกว่าปกติ` : `การใช้น้ำประปาลดลง ${changeStr} บ่งชี้ถึงพฤติกรรมการใช้น้ำอย่างรู้คุณค่าและไม่มีจุดรั่วไหล`;
+      action = isRed ? "- ให้เจ้าหน้าที่อาคารตรวจสอบจุดรั่วซึมของก๊อกน้ำและสายชำระ\n- ติดตั้งอุปกรณ์ลดแรงดันน้ำ (Aerator)" : "- รณรงค์ใช้น้ำอย่างประหยัดต่อไป\n- ตรวจสอบสภาพท่อประปาเป็นประจำ";
+    } else if (category === "กระดาษ") {
+      cause = isRed ? `ปริมาณใช้กระดาษเพิ่มขึ้น ${changeStr} อาจเป็นผลมาจากการเตรียมเอกสารการประชุม หรือพิมพ์เอกสารที่ไม่จำเป็น` : `การใช้กระดาษลดลง ${changeStr} เป็นผลสัมฤทธิ์จากระบบสารบรรณอิเล็กทรอนิกส์ (e-Document)`;
+      action = isRed ? "- ตั้งค่าเครื่องปริ้นเตอร์เป็นหน้า-หลัง (Double-sided) เป็นค่าเริ่มต้น\n- นำกระดาษหน้าเดียวมา Reuse" : "- ขยายผลระบบ e-Document\n- ส่งเสริมการเก็บเอกสารในรูปแบบ Cloud Storage";
+    } else if (category === "ขยะทั่วไป") {
+      cause = isRed ? `ขยะทั่วไปเพิ่มขึ้น ${changeStr} สาเหตุหลักจากการนำบรรจุภัณฑ์อาหารแบบใช้ครั้งเดียวทิ้งเข้ามาในสำนักงาน` : `ขยะทั่วไปลดลง ${changeStr} แสดงถึงการลดใช้พลาสติกแบบใช้ครั้งเดียวทิ้ง และคัดแยกขยะที่ถูกต้อง`;
+      action = isRed ? "- รณรงค์พกแก้วน้ำและกล่องข้าวส่วนตัว\n- ลดการให้ถุงพลาสติกจากร้านค้าในหน่วยงาน" : "- ต่อยอดกิจกรรม 3R (Reduce, Reuse, Recycle)\n- จัดจุดคัดแยกขยะให้ชัดเจน";
+    } else if (category === "ขยะรีไซเคิล") {
+      cause = isRed ? `สัดส่วนรีไซเคิลอยู่ที่ ${changeStr} ต่ำกว่าเป้าหมาย สาเหตุอาจมาจากการคัดแยกขยะตั้งแต่ต้นทางยังไม่สมบูรณ์` : `สัดส่วนขยะรีไซเคิลทำได้ถึง ${changeStr} ผ่านเกณฑ์ที่ตั้งเป้าไว้ สะท้อนระบบการจัดการของเสียที่มีประสิทธิภาพ`;
+      action = isRed ? "- จัดทำป้ายประชาสัมพันธ์วิธีการแยกขยะ\n- จัดกิจกรรมประกวดหรือให้รางวัลแผนกที่แยกขยะได้ดี" : "- นำรายได้จำหน่ายขยะเข้ากองทุนสวัสดิการเพื่อสร้างแรงจูงใจ\n- ขยายผลการรีไซเคิลขยะประเภทอื่นๆ";
+    } else if (category === "ก๊าซเรือนกระจก") {
+      cause = isRed ? `ปริมาณก๊าซเรือนกระจกเพิ่มขึ้น ${changeStr} เป็นผลพวงจากการใช้พลังงานและเชื้อเพลิงในภาพรวมที่สูงขึ้น` : `การปล่อยก๊าซลดลง ${changeStr} บ่งบอกถึงความสำเร็จของการจัดการ Green Office ส่งผลดีต่อสิ่งแวดล้อม`;
+      action = isRed ? "- เร่งรัดมาตรการประหยัดพลังงานในทุกหมวดอย่างเร่งด่วน\n- ติดตามผลอย่างใกล้ชิด" : "- รักษามาตรฐานการลดคาร์บอนฟุตพริ้นท์\n- ตั้งเป้ามุ่งสู่สำนักงานสีเขียวระดับดีเยี่ยม (G ทอง)";
+    }
+    
+    if(futureForecastText !== "") action += "\n\n" + futureForecastText;
+
+    return { cause, action, trendHistory };
+  };
+
+  const categories = [
+    { name: "น้ำประปา", data: metrics.energy.water, series: chartData.water }, 
+    { name: "ไฟฟ้า", data: metrics.energy.power, series: chartData.power },
+    { name: "น้ำมันเชื้อเพลิง", data: metrics.energy.oil, series: chartData.oil }, 
+    { name: "กระดาษ", data: metrics.energy.paper, series: chartData.paper },
+    { name: "ขยะทั่วไป", data: metrics.waste.genWaste, series: chartData.waste }, 
+    { name: "ขยะรีไซเคิล", data: metrics.waste.recycle, series: chartData.recycle },
+    { name: "ก๊าซเรือนกระจก", data: metrics.ghg.total, series: chartData.ghg }
+  ];
+
+  categories.forEach(cat => {
+    if (cat.data && cat.data.percent && cat.data.percent !== "-") {
+      let aiText = generateText(cat.name, cat.data.percent, cat.data.status, cat.series);
+      results.push({ category: cat.name, cause: aiText.cause, action: aiText.action, trend: aiText.trendHistory });
+    }
+  });
+
+  return results;
+}
+
+function getSummedRow(data, year, month, isYearly, valueCols, validMonths = null) {
+  if(!data) return { row: null, months: [] };
+  let rowObj = null; let monthsFound = [];
+  for (let i = 1; i < data.length; i++) {
+    let rYear = String(data[i][0]).trim();
+    let rMonth = String(data[i][1]).trim();
+    if (rYear === String(year).trim()) {
+      let isMatch = false;
+      if (!isYearly) isMatch = (rMonth === String(month).trim());
+      else isMatch = (validMonths !== null) ? validMonths.includes(rMonth) : true;
+      if (isMatch) {
+        if (!rowObj) { rowObj = [...data[i]]; for(let col of valueCols) rowObj[col] = 0; }
+        let rowHasValidData = false;
+        for(let col of valueCols) {
+          let cellVal = parseFloat(data[i][col]);
+          if (!isNaN(cellVal)) rowHasValidData = true;
+          rowObj[col] += (cellVal || 0); 
+        }
+        if (validMonths === null && rowHasValidData && !monthsFound.includes(rMonth)) monthsFound.push(rMonth);
+      }
+    }
+  }
+  return { row: rowObj, months: monthsFound };
+}
+
+function getAllData(targetYear, targetMonth) {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const isYearly = (targetMonth === "ทั้งปี");
+    
+    let energySheet = ss.getSheetByName("EnergyData") || ss.getSheets()[0]; 
+    let energyData = energySheet.getDataRange().getValues();
+    let currEnergyData = getSummedRow(energyData, targetYear, targetMonth, isYearly, [3, 5, 7, 9], null);
+    let currEnergy = currEnergyData.row;
+    let prevEnergyData = getSummedRow(energyData, targetYear - 1, targetMonth, isYearly, [3, 5, 7, 9], currEnergyData.months);
+    let prevEnergy = prevEnergyData.row;
+
+    let wasteSheet = ss.getSheetByName("WasteData");
+    let wasteData = wasteSheet ? wasteSheet.getDataRange().getValues() : null;
+    let currWasteData = getSummedRow(wasteData, targetYear, targetMonth, isYearly, [2, 4, 5], null);
+    let currWaste = currWasteData.row;
+    let prevWasteData = getSummedRow(wasteData, targetYear - 1, targetMonth, isYearly, [2, 4, 5], currWasteData.months);
+    let prevWaste = prevWasteData.row;
+
+    let ghgSheet = ss.getSheetByName("GHGData");
+    let ghgData = ghgSheet ? ghgSheet.getDataRange().getValues() : null;
+    let currGhgData = getSummedRow(ghgData, targetYear, targetMonth, isYearly, [3], null);
+    let currGhg = currGhgData.row;
+    let prevGhgData = getSummedRow(ghgData, targetYear - 1, targetMonth, isYearly, [3], currGhgData.months);
+    let prevGhg = prevGhgData.row;
+
+    const processChange = (currVal, prevVal) => {
+      if (!prevVal || prevVal === 0) return { percent: "-", status: "red", text: "ไม่มีข้อมูลปีฐาน" };
+      let change = ((currVal - prevVal) / prevVal) * 100;
+      let percentStr = (change > 0 ? "+" : "") + change.toFixed(2) + "%";
+      if (change > 0) return { percent: percentStr, status: "red", text: "มีแนวโน้มเพิ่มขึ้น ควรติดตาม" };
+      if (change === 0) return { percent: percentStr, status: "green", text: "คงที่ (ไม่เพิ่มขึ้น)" };
+      return { percent: percentStr, status: "green", text: "ลดลงได้ดี" };
+    }
+
+    let energyResult = { water: processChange(currEnergy?currEnergy[3]:0, prevEnergy?prevEnergy[3]:0), power: processChange(currEnergy?currEnergy[5]:0, prevEnergy?prevEnergy[5]:0), oil: processChange(currEnergy?currEnergy[7]:0, prevEnergy?prevEnergy[7]:0), paper: processChange(currEnergy?currEnergy[9]:0, prevEnergy?prevEnergy[9]:0) };
+
+    let wasteResult = { genWaste: { percent: "-", status: "red", text: "ไม่มีข้อมูล" }, recycle: { percent: "-", status: "red", text: "ไม่มีข้อมูล" } };
+    if (currWaste) {
+        let currentGenWaste = parseFloat(currWaste[2]) || 0; let currentRecycle = parseFloat(currWaste[4]) || 0; let currentTotal = parseFloat(currWaste[5]) || 1; let prevGenWaste = prevWaste ? (parseFloat(prevWaste[2]) || 0) : 0;
+        if (prevGenWaste > 0) wasteResult.genWaste = processChange(currentGenWaste, prevGenWaste);
+        let recycleRate = (currentRecycle / currentTotal) * 100;
+        let targetRecycle = (targetYear >= 2568) ? 50 : 45; 
+        wasteResult.recycle = (recycleRate >= targetRecycle) ? { percent: recycleRate.toFixed(2) + "%", status: "green", text: `ผ่านเกณฑ์เป้าหมาย` } : { percent: recycleRate.toFixed(2) + "%", status: "red", text: `ต่ำกว่าเป้าหมาย` };
+    }
+
+    let ghgResult = { total: processChange(currGhg?currGhg[3]:0, prevGhg?prevGhg[3]:0), target: currGhg ? (parseFloat(currGhg[2])||2) : 2 };
+
+    // เพิ่ม totalWaste (index 5) เพื่อให้กราฟนำไปใช้คำนวณเป้าหมาย 50%
+    let chartData = { water: extractYearlySeries(energyData, 3), power: extractYearlySeries(energyData, 5), oil: extractYearlySeries(energyData, 7), paper: extractYearlySeries(energyData, 9), waste: extractYearlySeries(wasteData, 2), recycle: extractYearlySeries(wasteData, 4), totalWaste: extractYearlySeries(wasteData, 5), ghg: extractYearlySeries(ghgData, 3) };
+    
+    let metrics = { energy: energyResult, waste: wasteResult, ghg: ghgResult };
+    let finalAnalysis = handleAIAnalysis(metrics, chartData, targetYear);
+
+    return { year: targetYear, month: targetMonth, energy: energyResult, waste: wasteResult, ghg: ghgResult, chartData: chartData, analysis: finalAnalysis };
+
+  } catch (e) {
+    return { error: "System Error: " + e.message };
+  }
+}
