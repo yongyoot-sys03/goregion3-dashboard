@@ -10,18 +10,13 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <style>
         body { font-family: 'Kanit', sans-serif; background-color: #f0f4f8; }
-        .neo-card {
-            background: linear-gradient(145deg, #ffffff, #f3f5f8);
-            box-shadow: 8px 8px 16px #dce1e6, -8px -8px 16px #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            border-radius: 1.5rem;
-            transition: all 0.3s ease;
-        }
-        .neo-card:hover { transform: translateY(-3px); box-shadow: 10px 10px 20px #dce1e6, -10px -10px 20px #ffffff; }
+        .neo-card { background: linear-gradient(145deg, #ffffff, #f3f5f8); box-shadow: 8px 8px 16px #dce1e6, -8px -8px 16px #ffffff; border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 1.5rem; transition: all 0.3s ease; }
         .text-gradient-red { background: linear-gradient(to bottom right, #ef4444, #9f1239); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .text-gradient-green { background: linear-gradient(to bottom right, #10b981, #047857); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .music-toggle { position: fixed; bottom: 20px; right: 20px; background: white; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer; z-index: 50; font-size: 24px; transition: transform 0.3s; }
         .music-toggle:hover { transform: scale(1.1); }
+        /* Fix Box Sizing สำหรับปุ่ม Tab ป้องกันการกระตุก */
+        .tab-btn { box-sizing: border-box; border-width: 2px; }
     </style>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-4">
@@ -30,12 +25,12 @@
     <audio id="bgMusic" loop><source src="music.mp3" type="audio/mpeg"></audio>
     <div id="musicBtn" class="music-toggle" onclick="toggleMusic()" title="เปิด/ปิดเพลง">🔇</div>
 
-    <!-- เมนู Tabs (4 แท็บ ยุบรวมกราฟแล้ว) -->
-    <div class="w-full max-w-lg mb-5 grid grid-cols-2 sm:flex sm:flex-wrap gap-2 text-[13px] sm:text-sm font-bold">
-        <button id="tab-exec" onclick="switchTab('exec')" class="col-span-2 sm:col-span-1 flex-1 bg-gradient-to-r from-blue-700 to-blue-900 text-white py-2.5 rounded-xl shadow-md border border-blue-500 transition-all">🏆 ภาพรวมผลการดำเนินงาน</button>
-        <button id="tab-energy" onclick="switchTab('energy')" class="flex-1 bg-white text-gray-500 hover:text-gray-700 py-2.5 rounded-xl shadow-sm border border-gray-200 transition-all">⚡ พลังงาน</button>
-        <button id="tab-waste" onclick="switchTab('waste')" class="flex-1 bg-white text-gray-500 hover:text-gray-700 py-2.5 rounded-xl shadow-sm border border-gray-200 transition-all">♻ ของเสีย</button>
-        <button id="tab-ghg" onclick="switchTab('ghg')" class="flex-1 bg-white text-gray-500 hover:text-gray-700 py-2.5 rounded-xl shadow-sm border border-gray-200 transition-all">☁️ ก๊าซเรือนกระจก</button>
+    <!-- เมนู Tabs (4 แท็บ ยุบรวมกราฟ) - เพิ่มคลาส tab-btn ควบคุมขนาดให้คงที่ -->
+    <div class="w-full max-w-lg mb-5 grid grid-cols-2 sm:flex sm:flex-wrap gap-2 text-[13px] sm:text-[14px] font-bold">
+        <button id="tab-exec" onclick="switchTab('exec')" class="tab-btn col-span-2 sm:col-span-1 flex-1 bg-gradient-to-r from-blue-700 to-blue-900 text-white py-3 rounded-2xl shadow-md border-blue-500 transition-all">🏆 ผลการดำเนินงานภาพรวม</button>
+        <button id="tab-energy" onclick="switchTab('energy')" class="tab-btn flex-1 bg-white text-gray-500 hover:text-gray-700 py-3 rounded-2xl shadow-sm border-transparent transition-all">⚡ พลังงาน</button>
+        <button id="tab-waste" onclick="switchTab('waste')" class="tab-btn flex-1 bg-white text-gray-500 hover:text-gray-700 py-3 rounded-2xl shadow-sm border-transparent transition-all">♻ ของเสีย</button>
+        <button id="tab-ghg" onclick="switchTab('ghg')" class="tab-btn flex-1 bg-white text-gray-500 hover:text-gray-700 py-3 rounded-2xl shadow-sm border-transparent transition-all">☁️ ก๊าซเรือนกระจก</button>
     </div>
 
     <!-- แถบเครื่องมือค้นหา -->
@@ -52,9 +47,28 @@
         </button>
     </div>
 
-    <div id="loading" class="hidden w-full max-w-lg mt-2 text-center bg-white rounded-[2rem] shadow-xl p-10 border border-gray-100">
-        <div class="animate-spin inline-block w-10 h-10 border-[4px] border-current border-t-transparent text-blue-600 rounded-full"></div>
-        <p class="mt-4 font-bold text-gray-600">กำลังประมวลผลข้อมูล...</p>
+    <!-- 🌟 หน้าจอ Welcome Screen (ปรับใหม่ให้สวยงาม) -->
+    <div id="welcome-screen" class="w-full max-w-lg mt-2">
+        <div class="flex flex-col items-center justify-center bg-white rounded-[2.5rem] shadow-[0_20px_40px_rgba(0,0,0,0.08)] p-10 border border-gray-100 text-center relative overflow-hidden">
+            <!-- ตกแต่งฉากหลัง -->
+            <div class="absolute top-0 right-0 w-32 h-32 bg-green-100 rounded-full mix-blend-multiply filter blur-2xl opacity-70 transform translate-x-10 -translate-y-10"></div>
+            <div class="absolute bottom-0 left-0 w-32 h-32 bg-blue-100 rounded-full mix-blend-multiply filter blur-2xl opacity-70 transform -translate-x-10 translate-y-10"></div>
+            
+            <img src="https://i.postimg.cc/BnxKQyWx/LINE-ALBUM-New-logo-221018.jpg" alt="โลโก้" class="h-28 w-auto mb-5 object-contain drop-shadow-md relative z-10">
+            <h2 class="text-3xl font-black text-gray-800 relative z-10">สำนักงานไปรษณีย์เขต 3</h2>
+            <p class="text-lg text-green-600 font-bold mt-2 relative z-10">ระบบรายงานผลสำนักงานสีเขียว (Green Office)</p>
+            <div class="w-16 h-1 bg-gray-200 rounded-full my-5 relative z-10"></div>
+            <p class="text-sm text-gray-500 font-medium relative z-10 mb-6">หมวด 2 การสื่อสารและสร้างจิตสำนึก</p>
+            
+            <div class="mt-2 flex items-center justify-center text-[#3b719f] font-bold text-base bg-blue-50 py-3 px-8 rounded-full shadow-inner border border-blue-100 relative z-10 animate-pulse">
+                <span>👆 กรุณาเลือกปี/เดือน และกด "เรียกดูข้อมูล"</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="loading" class="hidden w-full max-w-lg mt-2 text-center bg-white rounded-[2.5rem] shadow-xl p-10 border border-gray-100">
+        <div class="animate-spin inline-block w-12 h-12 border-[4px] border-current border-t-transparent text-blue-600 rounded-full"></div>
+        <p class="mt-4 font-bold text-gray-600">กำลังดึงข้อมูลและให้ AI วิเคราะห์...</p>
     </div>
     <div id="error-msg" class="text-red-600 font-bold bg-red-100 p-4 rounded-xl w-full max-w-lg text-center hidden mb-4 mt-2"></div>
 
@@ -72,10 +86,11 @@
             <div class="grid grid-cols-2 gap-4 text-sm font-bold text-gray-600 mb-3">
                 <div class="flex items-center gap-2"><span id="dot-water" class="w-4 h-4 rounded-full bg-gray-300"></span> น้ำประปา</div>
                 <div class="flex items-center gap-2"><span id="dot-power" class="w-4 h-4 rounded-full bg-gray-300"></span> ไฟฟ้า</div>
-                <div class="flex items-center gap-2"><span id="dot-oil" class="w-4 h-4 rounded-full bg-gray-300"></span> น้ำมัน</div>
+                <div class="flex items-center gap-2"><span id="dot-oil" class="w-4 h-4 rounded-full bg-gray-300"></span> น้ำมันเชื้อเพลิง</div>
                 <div class="flex items-center gap-2"><span id="dot-paper" class="w-4 h-4 rounded-full bg-gray-300"></span> กระดาษ</div>
+                <div class="flex items-center gap-2"><span id="dot-genWaste" class="w-4 h-4 rounded-full bg-gray-300"></span> ขยะทั่วไป</div>
                 <div class="flex items-center gap-2"><span id="dot-recycle" class="w-4 h-4 rounded-full bg-gray-300"></span> ขยะรีไซเคิล</div>
-                <div class="flex items-center gap-2"><span id="dot-ghg" class="w-4 h-4 rounded-full bg-gray-300"></span> ก๊าซเรือนกระจก</div>
+                <div class="flex items-center gap-2 col-span-2 justify-center"><span id="dot-ghg" class="w-4 h-4 rounded-full bg-gray-300"></span> ก๊าซเรือนกระจก</div>
             </div>
             <div class="text-[11px] text-center text-gray-500 bg-gray-50 p-2 rounded-lg border border-gray-100">
                 <span class="font-bold underline">หมายเหตุ:</span><br>
@@ -102,43 +117,43 @@
             <h1 class="display-month-year text-xl font-bold text-[#e10b17] mt-1 drop-shadow-sm tracking-wide">...</h1>
         </div>
 
-        <!-- การ์ดไฟฟ้า -->
         <div class="neo-card p-5 space-y-3">
             <div class="flex items-center justify-between border-b border-gray-100 pb-2">
-                <div class="flex items-center gap-2"><img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/High%20voltage/3D/high_voltage_3d.png" class="w-10 h-10 drop-shadow-sm" crossorigin="anonymous"><span class="font-extrabold text-gray-700 text-lg">ไฟฟ้า</span></div>
+                <div class="flex items-center gap-2"><img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/High%20voltage/3D/high_voltage_3d.png" class="w-10 h-10 drop-shadow-sm" crossorigin="anonymous">
+                    <span class="font-extrabold text-gray-700 text-lg leading-tight">ไฟฟ้า<br><span class="text-[10px] text-gray-400 font-normal">(หน่วย: kWh)</span></span></div>
                 <div class="flex items-center gap-2"><div class="text-right"><div id="val-power" class="text-3xl font-black tracking-tighter">-</div><div id="text-power" class="text-[10px] font-bold">-</div></div><div id="icon-power"></div></div>
             </div>
-            <div class="h-24 w-full"><canvas id="chartPower"></canvas></div>
+            <div class="h-40 w-full"><canvas id="chartPower"></canvas></div>
             <div id="ai-power" class="hidden bg-blue-50 p-3 rounded-xl border border-blue-100 text-[12px] text-gray-700"></div>
         </div>
 
-        <!-- การ์ดน้ำมัน -->
         <div class="neo-card p-5 space-y-3">
             <div class="flex items-center justify-between border-b border-gray-100 pb-2">
-                <div class="flex items-center gap-2"><img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Fuel%20pump/3D/fuel_pump_3d.png" class="w-10 h-10 drop-shadow-sm" crossorigin="anonymous"><span class="font-extrabold text-gray-700 text-lg">น้ำมัน</span></div>
+                <div class="flex items-center gap-2"><img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Fuel%20pump/3D/fuel_pump_3d.png" class="w-10 h-10 drop-shadow-sm" crossorigin="anonymous">
+                    <span class="font-extrabold text-gray-700 text-lg leading-tight">น้ำมันเชื้อเพลิง<br><span class="text-[10px] text-gray-400 font-normal">(หน่วย: ลิตร)</span></span></div>
                 <div class="flex items-center gap-2"><div class="text-right"><div id="val-oil" class="text-3xl font-black tracking-tighter">-</div><div id="text-oil" class="text-[10px] font-bold">-</div></div><div id="icon-oil"></div></div>
             </div>
-            <div class="h-24 w-full"><canvas id="chartOil"></canvas></div>
+            <div class="h-40 w-full"><canvas id="chartOil"></canvas></div>
             <div id="ai-oil" class="hidden bg-blue-50 p-3 rounded-xl border border-blue-100 text-[12px] text-gray-700"></div>
         </div>
 
-        <!-- การ์ดน้ำประปา -->
         <div class="neo-card p-5 space-y-3">
             <div class="flex items-center justify-between border-b border-gray-100 pb-2">
-                <div class="flex items-center gap-2"><img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Droplet/3D/droplet_3d.png" class="w-10 h-10 drop-shadow-sm" crossorigin="anonymous"><span class="font-extrabold text-gray-700 text-lg">น้ำประปา</span></div>
+                <div class="flex items-center gap-2"><img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Droplet/3D/droplet_3d.png" class="w-10 h-10 drop-shadow-sm" crossorigin="anonymous">
+                    <span class="font-extrabold text-gray-700 text-lg leading-tight">น้ำประปา<br><span class="text-[10px] text-gray-400 font-normal">(หน่วย: ลบ.ม.)</span></span></div>
                 <div class="flex items-center gap-2"><div class="text-right"><div id="val-water" class="text-3xl font-black tracking-tighter">-</div><div id="text-water" class="text-[10px] font-bold">-</div></div><div id="icon-water"></div></div>
             </div>
-            <div class="h-24 w-full"><canvas id="chartWater"></canvas></div>
+            <div class="h-40 w-full"><canvas id="chartWater"></canvas></div>
             <div id="ai-water" class="hidden bg-blue-50 p-3 rounded-xl border border-blue-100 text-[12px] text-gray-700"></div>
         </div>
 
-        <!-- การ์ดกระดาษ -->
         <div class="neo-card p-5 space-y-3">
             <div class="flex items-center justify-between border-b border-gray-100 pb-2">
-                <div class="flex items-center gap-2"><img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Page%20facing%20up/3D/page_facing_up_3d.png" class="w-10 h-10 drop-shadow-sm" crossorigin="anonymous"><span class="font-extrabold text-gray-700 text-lg">กระดาษ</span></div>
+                <div class="flex items-center gap-2"><img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Page%20facing%20up/3D/page_facing_up_3d.png" class="w-10 h-10 drop-shadow-sm" crossorigin="anonymous">
+                    <span class="font-extrabold text-gray-700 text-lg leading-tight">กระดาษ<br><span class="text-[10px] text-gray-400 font-normal">(หน่วย: รีม)</span></span></div>
                 <div class="flex items-center gap-2"><div class="text-right"><div id="val-paper" class="text-3xl font-black tracking-tighter">-</div><div id="text-paper" class="text-[10px] font-bold">-</div></div><div id="icon-paper"></div></div>
             </div>
-            <div class="h-24 w-full"><canvas id="chartPaper"></canvas></div>
+            <div class="h-40 w-full"><canvas id="chartPaper"></canvas></div>
             <div id="ai-paper" class="hidden bg-blue-50 p-3 rounded-xl border border-blue-100 text-[12px] text-gray-700"></div>
         </div>
     </div>
@@ -152,11 +167,22 @@
 
         <div class="neo-card p-5 space-y-3">
             <div class="flex items-center justify-between border-b border-gray-100 pb-2">
-                <div class="flex items-center gap-2"><img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Recycling%20symbol/3D/recycling_symbol_3d.png" class="w-10 h-10 drop-shadow-sm" crossorigin="anonymous"><span class="font-extrabold text-gray-700 text-[15px] leading-tight">สัดส่วน<br>รีไซเคิล</span></div>
+                <div class="flex items-center gap-2"><img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Wastebasket/3D/wastebasket_3d.png" class="w-10 h-10 drop-shadow-sm" crossorigin="anonymous">
+                    <span class="font-extrabold text-gray-700 text-lg leading-tight">ขยะทั่วไป<br><span class="text-[10px] text-gray-400 font-normal">(หน่วย: กก.)</span></span></div>
+                <div class="flex items-center gap-2"><div class="text-right"><div id="val-genWaste" class="text-3xl font-black tracking-tighter">-</div><div id="text-genWaste" class="text-[10px] font-bold">-</div></div><div id="icon-genWaste"></div></div>
+            </div>
+            <div class="h-40 w-full"><canvas id="chartGenWaste"></canvas></div>
+            <div id="ai-genWaste" class="hidden bg-purple-50 p-3 rounded-xl border border-purple-100 text-[12px] text-gray-700"></div>
+        </div>
+
+        <div class="neo-card p-5 space-y-3">
+            <div class="flex items-center justify-between border-b border-gray-100 pb-2">
+                <div class="flex items-center gap-2"><img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Recycling%20symbol/3D/recycling_symbol_3d.png" class="w-10 h-10 drop-shadow-sm" crossorigin="anonymous">
+                    <span class="font-extrabold text-gray-700 text-[15px] leading-tight">สัดส่วนรีไซเคิล<br><span class="text-[10px] text-gray-400 font-normal">(หน่วย: กก.)</span></span></div>
                 <div class="flex items-center gap-2"><div class="text-right"><div id="val-recycle" class="text-3xl font-black tracking-tighter">-</div><div id="text-recycle" class="text-[10px] font-bold">-</div></div><div id="icon-recycle"></div></div>
             </div>
-            <div class="h-24 w-full"><canvas id="chartWaste"></canvas></div>
-            <div id="ai-waste" class="hidden bg-purple-50 p-3 rounded-xl border border-purple-100 text-[12px] text-gray-700"></div>
+            <div class="h-40 w-full"><canvas id="chartRecycle"></canvas></div>
+            <div id="ai-recycle" class="hidden bg-purple-50 p-3 rounded-xl border border-purple-100 text-[12px] text-gray-700"></div>
             <p class="text-[12px] text-center text-[#10b981] font-bold mt-2">เป้าหมาย: รีไซเคิล <span id="note-target"></span>% ของขยะรวม</p>
         </div>
     </div>
@@ -170,10 +196,11 @@
 
         <div class="neo-card p-5 space-y-3">
             <div class="flex items-center justify-between border-b border-gray-100 pb-2">
-                <div class="flex items-center gap-2"><img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Cloud/3D/cloud_3d.png" class="w-10 h-10 drop-shadow-sm" crossorigin="anonymous"><span class="font-extrabold text-gray-700 text-lg">ปริมาณก๊าซ</span></div>
+                <div class="flex items-center gap-2"><img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Cloud/3D/cloud_3d.png" class="w-10 h-10 drop-shadow-sm" crossorigin="anonymous">
+                    <span class="font-extrabold text-gray-700 text-lg leading-tight">ปริมาณก๊าซ<br><span class="text-[10px] text-gray-400 font-normal">(หน่วย: kgCO2e)</span></span></div>
                 <div class="flex items-center gap-2"><div class="text-right"><div id="val-ghgTotal" class="text-3xl font-black tracking-tighter">-</div><div id="text-ghgTotal" class="text-[10px] font-bold">-</div></div><div id="icon-ghgTotal"></div></div>
             </div>
-            <div class="h-24 w-full"><canvas id="chartGHG"></canvas></div>
+            <div class="h-40 w-full"><canvas id="chartGHG"></canvas></div>
             <div id="ai-ghg" class="hidden bg-gray-50 p-3 rounded-xl border border-gray-200 text-[12px] text-gray-700"></div>
             <p class="text-[12px] text-center text-[#10b981] font-bold mt-2">เป้าหมาย: ลดลง <span id="note-ghg-target"></span>% จากปีฐาน</p>
         </div>
@@ -188,30 +215,30 @@
         function toggleMusic() { if (isPlaying) { bgMusic.pause(); musicBtn.innerHTML = '🔇'; isPlaying = false; } else { bgMusic.play(); musicBtn.innerHTML = '🎵'; isPlaying = true; musicStarted = true; } }
         document.body.addEventListener('click', function() { if (!musicStarted && bgMusic) { bgMusic.play().then(() => { musicBtn.innerHTML = '🎵'; isPlaying = true; musicStarted = true; }).catch((e) => {}); } }, { once: true });
 
-        let currentTab = 'exec'; 
+        let currentTab = ''; 
         let globalChartData = null; 
         let chartsInstance = {}; 
 
         function switchTab(tabName) {
             currentTab = tabName;
-            const btnActive = 'bg-gradient-to-r from-red-600 to-[#e10b17] text-white py-2.5 rounded-xl shadow-lg border border-red-400 transition-all font-bold';
-            const btnExecActive = 'col-span-2 sm:col-span-1 flex-1 bg-gradient-to-r from-blue-700 to-blue-900 text-white py-2.5 rounded-xl shadow-lg border border-blue-500 transition-all font-bold';
-            const btnInactive = 'flex-1 bg-white text-gray-500 hover:text-gray-700 py-2.5 rounded-xl shadow-sm border border-gray-200 transition-all font-bold';
+            
+            // ใช้ border-transparent กับปุ่มที่ไม่ได้เลือก เพื่อไม่ให้ขนาดกล่องเปลี่ยน
+            const btnActive = 'tab-btn flex-1 bg-gradient-to-r from-red-600 to-[#e10b17] text-white py-3 rounded-2xl shadow-lg border-red-500 transition-all font-bold';
+            const btnExecActive = 'tab-btn col-span-2 sm:col-span-1 flex-1 bg-gradient-to-r from-blue-700 to-blue-900 text-white py-3 rounded-2xl shadow-lg border-blue-500 transition-all font-bold';
+            const btnInactive = 'tab-btn flex-1 bg-white text-gray-500 hover:text-gray-700 py-3 rounded-2xl shadow-sm border-transparent transition-all font-bold';
             
             document.getElementById('tab-exec').className = tabName === 'exec' ? btnExecActive : 'col-span-2 sm:col-span-1 ' + btnInactive;
             document.getElementById('tab-energy').className = tabName === 'energy' ? btnActive : btnInactive;
-            document.getElementById('tab-waste').className = tabName === 'waste' ? btnActive.replace('red','purple').replace('#e10b17','#9333ea') : btnInactive;
-            document.getElementById('tab-ghg').className = tabName === 'ghg' ? btnActive.replace('red','gray').replace('#e10b17','#4b5563') : btnInactive;
+            document.getElementById('tab-waste').className = tabName === 'waste' ? btnActive.replace('red-600','purple-600').replace('#e10b17','#9333ea').replace('red-500','purple-500') : btnInactive;
+            document.getElementById('tab-ghg').className = tabName === 'ghg' ? btnActive.replace('red-600','gray-600').replace('#e10b17','#4b5563').replace('red-500','gray-500') : btnInactive;
             
-            if(!document.getElementById('btn-download').classList.contains('hidden') || tabName === 'exec') {
+            if(!document.getElementById('welcome-screen').classList.contains('hidden') === false) {
                 document.getElementById('dashboard-exec').classList.toggle('hidden', tabName !== 'exec');
                 document.getElementById('dashboard-energy').classList.toggle('hidden', tabName !== 'energy');
                 document.getElementById('dashboard-waste').classList.toggle('hidden', tabName !== 'waste');
                 document.getElementById('dashboard-ghg').classList.toggle('hidden', tabName !== 'ghg');
                 
                 document.getElementById('btn-download').classList.toggle('hidden', tabName === 'exec');
-                
-                // ถ้าย้ายหน้า ให้โหลดกราฟอีกรอบเผื่อแคนวาสหาย
                 if(tabName !== 'exec') renderCharts();
             }
         }
@@ -223,7 +250,10 @@
             const year = document.getElementById('select-year').value;
             const month = document.getElementById('select-month').value;
             
-            ['exec','energy','waste','ghg'].forEach(t => document.getElementById('dashboard-'+t).classList.add('hidden'));
+            ['welcome-screen','exec','energy','waste','ghg'].forEach(t => {
+                const el = document.getElementById(t==='welcome-screen'?t:'dashboard-'+t);
+                if(el) el.classList.add('hidden');
+            });
             document.getElementById('error-msg').classList.add('hidden');
             document.getElementById('btn-download').classList.add('hidden');
             document.getElementById('loading').classList.remove('hidden');
@@ -247,16 +277,14 @@
             }
 
             globalChartData = data.chartData;
-            document.getElementById(`dashboard-${currentTab}`).classList.remove('hidden');
-            if(currentTab !== 'exec') document.getElementById('btn-download').classList.remove('hidden');
+            if(currentTab === '') switchTab('exec'); else switchTab(currentTab);
             
             const displayMonth = data.month === "ทั้งปี" ? "รวมตลอดปี" : data.month;
             document.querySelectorAll('.display-month-year').forEach(el => el.innerText = `${displayMonth} ${data.year}`);
-            
             if(document.getElementById('note-target')) document.getElementById('note-target').innerText = (data.year >= 2568) ? "50" : "45";
             if(document.getElementById('note-ghg-target') && !data.ghg.error) document.getElementById('note-ghg-target').innerText = data.ghg.target;
 
-            // ฟังก์ชันผูกข้อความวิเคราะห์ AI
+            // ผูกข้อความวิเคราะห์ AI
             const setAnalysis = (keyword, elementId) => {
                 const container = document.getElementById(elementId);
                 if(!container) return;
@@ -269,7 +297,6 @@
                 }
             };
 
-            // อัปเดต % และ ไอคอน
             const updateVal = (type, info) => {
                 if(!info) return;
                 const isRed = info.status === 'red';
@@ -290,66 +317,87 @@
                 if(dot) dot.className = `w-4 h-4 rounded-full ${isRed ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]' : 'bg-green-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]'}`;
             };
 
-            // โหลดข้อมูล % และ AI Text
             if(!data.energy.error) { 
                 updateVal('water', data.energy.water); setAnalysis('น้ำประปา', 'ai-water');
                 updateVal('power', data.energy.power); setAnalysis('ไฟฟ้า', 'ai-power');
-                updateVal('oil', data.energy.oil); setAnalysis('น้ำมัน', 'ai-oil');
+                updateVal('oil', data.energy.oil); setAnalysis('น้ำมันเชื้อเพลิง', 'ai-oil');
                 updateVal('paper', data.energy.paper); setAnalysis('กระดาษ', 'ai-paper');
             }
             if(!data.waste.error) { 
-                updateVal('recycle', data.waste.recycle); setAnalysis('ของเสีย', 'ai-waste');
+                updateVal('genWaste', data.waste.genWaste); setAnalysis('ขยะทั่วไป', 'ai-genWaste');
+                updateVal('recycle', data.waste.recycle); setAnalysis('ขยะรีไซเคิล', 'ai-recycle');
             }
             if(!data.ghg.error) { 
                 updateVal('ghgTotal', data.ghg.total); updateVal('ghg', data.ghg.total);
                 setAnalysis('ก๊าซเรือนกระจก', 'ai-ghg');
             } 
-            
-            if(currentTab !== 'exec') renderCharts();
         }
 
         function renderCharts() {
             if(!globalChartData) return;
-            function createLineChart(canvasId, lineColor, seriesData) {
+            const monthVal = document.getElementById('select-month').value;
+            const isFullYear = (monthVal === "ทั้งปี");
+            const monthsArr = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+            const mIndex = monthsArr.indexOf(monthVal);
+
+            function createSmartChart(canvasId, mainColor, seriesData, unitText) {
                 if(!document.getElementById(canvasId)) return;
                 if(chartsInstance[canvasId]) chartsInstance[canvasId].destroy();
-                let actual69 = seriesData['2569'] || new Array(12).fill(null);
-                let forecast69 = new Array(12).fill(null);
-                let lastValidIndex = -1, lastValidValue = 0;
-                for(let i=0; i<12; i++) { if(actual69[i] !== null && actual69[i] > 0) { lastValidIndex = i; lastValidValue = actual69[i]; } }
-                if(lastValidIndex !== -1 && lastValidIndex < 11) {
-                    forecast69[lastValidIndex] = lastValidValue; 
-                    for(let i = lastValidIndex + 1; i < 12; i++) {
-                        lastValidValue = lastValidValue * 0.98; forecast69[i] = Math.round(lastValidValue);
-                    }
-                }
+                
                 const ctx = document.getElementById(canvasId).getContext('2d');
-                chartsInstance[canvasId] = new Chart(ctx, {
-                    type: 'line', plugins: [ChartDataLabels],
-                    data: {
-                        labels: ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'],
-                        datasets: [
-                            { data: seriesData['2566'], borderColor: '#e5e7eb', borderWidth: 1.5, pointRadius: 0, datalabels: { display: false } },
-                            { data: seriesData['2567'], borderColor: '#d1d5db', borderWidth: 1.5, pointRadius: 0, datalabels: { display: false } },
-                            { data: seriesData['2568'], borderColor: '#9ca3af', borderWidth: 1.5, pointRadius: 0, datalabels: { display: false } },
-                            { data: actual69, borderColor: lineColor, backgroundColor: lineColor, borderWidth: 2, pointRadius: 2, datalabels: { display: true, align: 'top', offset: 1, color: lineColor, font: { family: 'Kanit', size: 8, weight: 'bold' }, formatter: v => v!==null ? v.toLocaleString() : '' } },
-                            { data: forecast69, borderColor: '#3b719f', borderDash: [4, 4], borderWidth: 1.5, pointRadius: 1.5, datalabels: { display: true, align: 'bottom', offset: 1, color: '#3b719f', font: { family: 'Kanit', size: 8 }, formatter: v => v!==null ? v.toLocaleString() : '' } }
-                        ]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, layout: { padding: { top: 10, right: 10, left: 5 } }, plugins: { legend: { display: false }, tooltip: { enabled: false } }, scales: { y: { display: false }, x: { ticks: { font: { family: 'Kanit', size: 9 }, color: '#9ca3af' }, grid: { display: false } } } }
-                });
+                
+                if (isFullYear) {
+                    // กราฟเส้น 12 เดือน
+                    chartsInstance[canvasId] = new Chart(ctx, {
+                        type: 'line', plugins: [ChartDataLabels],
+                        data: {
+                            labels: monthsArr,
+                            datasets: [
+                                { label: 'ปี 2566', data: seriesData['2566'], borderColor: '#9ca3af', borderWidth: 2, pointRadius: 0, datalabels: { display: false } },
+                                { label: 'ปี 2567', data: seriesData['2567'], borderColor: '#f59e0b', borderWidth: 2, pointRadius: 0, datalabels: { display: false } },
+                                { label: 'ปี 2568', data: seriesData['2568'], borderColor: '#3b82f6', borderWidth: 2, pointRadius: 0, datalabels: { display: false } },
+                                { label: 'ปี 2569', data: seriesData['2569'], borderColor: mainColor, backgroundColor: mainColor, borderWidth: 2.5, pointRadius: 3, datalabels: { display: true, align: 'top', offset: 2, color: mainColor, font: { family: 'Kanit', size: 9, weight: 'bold' }, formatter: v => v!==null ? v.toLocaleString() : '' } }
+                            ]
+                        },
+                        options: { 
+                            responsive: true, maintainAspectRatio: false, layout: { padding: { top: 15, right: 10, left: 5 } }, 
+                            plugins: { legend: { display: true, position: 'top', labels: { font: { family: 'Kanit', size: 10 }, boxWidth: 10, usePointStyle: true } }, tooltip: { enabled: false } }, 
+                            scales: { y: { display: false }, x: { ticks: { font: { family: 'Kanit', size: 9 }, color: '#9ca3af' }, grid: { display: false } } } 
+                        }
+                    });
+                } else {
+                    // กราฟแท่ง เทียบเฉพาะเดือนที่เลือกของแต่ละปี
+                    const barData = [ seriesData['2566'][mIndex], seriesData['2567'][mIndex], seriesData['2568'][mIndex], seriesData['2569'][mIndex] ];
+                    chartsInstance[canvasId] = new Chart(ctx, {
+                        type: 'bar', plugins: [ChartDataLabels],
+                        data: {
+                            labels: ['ปี 2566', 'ปี 2567', 'ปี 2568', 'ปี 2569'],
+                            datasets: [{
+                                data: barData,
+                                backgroundColor: ['#9ca3af', '#f59e0b', '#3b82f6', mainColor],
+                                borderRadius: 4
+                            }]
+                        },
+                        options: { 
+                            responsive: true, maintainAspectRatio: false, layout: { padding: { top: 20 } }, 
+                            plugins: { legend: { display: false }, tooltip: { enabled: false }, datalabels: { display: true, align: 'end', anchor: 'end', color: '#4b5563', font: { family: 'Kanit', size: 10, weight: 'bold' }, formatter: v => v!==null ? v.toLocaleString() : 'ไม่มีข้อมูล' } }, 
+                            scales: { y: { display: false }, x: { ticks: { font: { family: 'Kanit', size: 11, weight: 'bold' } }, grid: { display: false } } } 
+                        }
+                    });
+                }
             }
             if(currentTab === 'energy') {
-                createLineChart('chartPower', '#dc2626', globalChartData.power);
-                createLineChart('chartOil', '#f97316', globalChartData.oil);
-                createLineChart('chartWater', '#3b82f6', globalChartData.water);
-                createLineChart('chartPaper', '#10b981', globalChartData.paper);
+                createSmartChart('chartPower', '#dc2626', globalChartData.power);
+                createSmartChart('chartOil', '#f97316', globalChartData.oil);
+                createSmartChart('chartWater', '#3b82f6', globalChartData.water);
+                createSmartChart('chartPaper', '#10b981', globalChartData.paper);
             }
             if(currentTab === 'waste') {
-                createLineChart('chartWaste', '#9333ea', globalChartData.waste);
+                createSmartChart('chartGenWaste', '#9333ea', globalChartData.waste);
+                createSmartChart('chartRecycle', '#9333ea', globalChartData.recycle);
             }
             if(currentTab === 'ghg') {
-                createLineChart('chartGHG', '#475569', globalChartData.ghg);
+                createSmartChart('chartGHG', '#475569', globalChartData.ghg);
             }
         }
 
