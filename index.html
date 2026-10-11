@@ -126,7 +126,12 @@
             <h3 class="text-2xl font-extrabold text-gray-800">การใช้ทรัพยากรพลังงาน</h3>
             <h1 class="display-month-year text-xl font-bold text-[#e10b17] mt-1 drop-shadow-sm tracking-wide">...</h1>
             <p class="display-compare-text text-[12px] sm:text-[13px] text-gray-500 font-medium mt-1">...</p>
-            <p class="display-forecast-text hidden text-[11px] text-[#ef4444] font-bold mt-2 bg-red-50 px-3 py-2 rounded-xl inline-block border border-red-100">* เส้นประสีแดงแสดง <span class="text-red-700 underline">เป้าหมายที่ต้องควบคุม</span><br>(อ้างอิง: ต้องลดลงอย่างน้อย 1% จากเดือนเดียวกันของปีที่ผ่านมา)</p>
+            <div class="display-forecast-text hidden mt-3">
+                <p class="text-[11px] text-gray-600 font-bold bg-gray-50 px-4 py-2 rounded-xl inline-block border border-gray-200 text-left leading-relaxed">
+                    <span class="text-red-500">🔴 เส้นประสีแดง:</span> คาดการณ์ความน่าจะเป็น (อ้างอิงอัตราส่วนปัจจุบัน)<br>
+                    <span class="text-green-600">🟢 เส้นประสีเขียว:</span> เป้าหมายที่ต้องควบคุม (-1% จากปีก่อน)
+                </p>
+            </div>
         </div>
 
         <div class="neo-card p-5 space-y-3">
@@ -181,7 +186,12 @@
             <h3 class="text-2xl font-extrabold text-gray-800">การจัดการของเสีย</h3>
             <h1 class="display-month-year text-xl font-bold text-[#e10b17] mt-1 drop-shadow-sm tracking-wide">...</h1>
             <p class="display-compare-text text-[12px] sm:text-[13px] text-gray-500 font-medium mt-1">...</p>
-            <p class="display-forecast-text hidden text-[11px] text-[#ef4444] font-bold mt-2 bg-red-50 px-3 py-2 rounded-xl inline-block border border-red-100">* เส้นประสีแดงแสดง <span class="text-red-700 underline">เป้าหมายที่ต้องควบคุม</span><br>(อ้างอิง: ต้องลดลงอย่างน้อย 1% จากเดือนเดียวกันของปีที่ผ่านมา)</p>
+            <div class="display-forecast-text hidden mt-3">
+                <p class="text-[11px] text-gray-600 font-bold bg-gray-50 px-4 py-2 rounded-xl inline-block border border-gray-200 text-left leading-relaxed">
+                    <span class="text-red-500">🔴 เส้นประสีแดง:</span> คาดการณ์ความน่าจะเป็น (อ้างอิงอัตราส่วนปัจจุบัน)<br>
+                    <span class="text-green-600">🟢 เส้นประสีเขียว:</span> เป้าหมายที่ต้องควบคุม (-1% จากปีก่อน)
+                </p>
+            </div>
         </div>
 
         <div class="neo-card p-5 space-y-3">
@@ -217,7 +227,12 @@
             <h3 class="text-2xl font-extrabold text-gray-800">การปล่อยก๊าซเรือนกระจก</h3>
             <h1 class="display-month-year text-xl font-bold text-[#e10b17] mt-1 drop-shadow-sm tracking-wide">...</h1>
             <p class="display-compare-text text-[12px] sm:text-[13px] text-gray-500 font-medium mt-1">...</p>
-            <p class="display-forecast-text hidden text-[11px] text-[#ef4444] font-bold mt-2 bg-red-50 px-3 py-2 rounded-xl inline-block border border-red-100">* เส้นประสีแดงแสดง <span class="text-red-700 underline">เป้าหมายที่ต้องควบคุม</span><br>(อ้างอิง: ต้องลดลงอย่างน้อย 1% จากเดือนเดียวกันของปีที่ผ่านมา)</p>
+            <div class="display-forecast-text hidden mt-3">
+                <p class="text-[11px] text-gray-600 font-bold bg-gray-50 px-4 py-2 rounded-xl inline-block border border-gray-200 text-left leading-relaxed">
+                    <span class="text-red-500">🔴 เส้นประสีแดง:</span> คาดการณ์ความน่าจะเป็น (อ้างอิงอัตราส่วนปัจจุบัน)<br>
+                    <span class="text-green-600">🟢 เส้นประสีเขียว:</span> เป้าหมายที่ต้องควบคุม (-1% จากปีก่อน)
+                </p>
+            </div>
         </div>
 
         <div class="neo-card p-5 space-y-3">
@@ -372,7 +387,7 @@
             } 
         }
 
-        // ================= 📈 จัดการสีกราฟ การเรียง และตัวเลขบนเส้น =================
+        // ================= 📈 จัดการกราฟ พยากรณ์ และเส้นเป้าหมาย =================
         function renderCharts() {
             if(!globalChartData) return;
             const monthVal = document.getElementById('select-month').value;
@@ -387,7 +402,8 @@
             const colorY2 = '#2563eb'; // 2567: น้ำเงิน
             const colorY1 = '#eab308'; // 2568: เหลือง
             const colorCurrent = '#dc2626'; // 2569: แดง
-            const colorTarget = '#dc2626'; // เป้าหมาย: แดง
+            const colorForecast = '#ef4444'; // พยากรณ์: แดงอ่อน
+            const colorTarget = '#10b981'; // เป้าหมาย: เขียว
 
             function createSmartChart(canvasId, seriesData) {
                 if(!document.getElementById(canvasId)) return;
@@ -398,22 +414,31 @@
                 if (isFullYear) {
                     let actualData = [...(seriesData[targetYear] || new Array(12).fill(null))];
                     let prevData = seriesData[prevYearStr] || new Array(12).fill(0);
+                    let forecastLine = new Array(12).fill(null);
                     let targetLine = new Array(12).fill(null);
                     
                     let lastValidIndex = -1;
+                    let ytdCurrent = 0, ytdPrev = 0;
                     for(let i=0; i<12; i++) { 
                         if(actualData[i] !== null && actualData[i] > 0) { 
                             lastValidIndex = i; 
+                            ytdCurrent += actualData[i];
+                            ytdPrev += prevData[i];
                         } 
                     }
+                    let ratio = ytdPrev > 0 ? ytdCurrent / ytdPrev : 1;
                     
                     if(lastValidIndex !== -1 && lastValidIndex < 11) {
+                        forecastLine[lastValidIndex] = actualData[lastValidIndex]; 
                         targetLine[lastValidIndex] = actualData[lastValidIndex]; 
+                        
                         for(let i = lastValidIndex + 1; i < 12; i++) {
-                            if(prevData[i] > 0) {
-                                targetLine[i] = Math.round(prevData[i] * 0.99); 
+                            let pVal = prevData[i] || 0;
+                            forecastLine[i] = Math.round(pVal * ratio); 
+                            if(canvasId === 'chartRecycle') {
+                                targetLine[i] = null; // ขยะรีไซเคิลไม่มีเป้าหมาย -1%
                             } else {
-                                targetLine[i] = targetLine[i-1];
+                                targetLine[i] = Math.round(pVal * 0.99); 
                             }
                         }
                     }
@@ -423,11 +448,10 @@
                         data: {
                             labels: monthsArr,
                             datasets: [
-                                { label: `ปี ${parseInt(targetYear)-3}`, data: seriesData[String(parseInt(targetYear)-3)], borderColor: colorY3, borderWidth: 2, pointRadius: 0, datalabels: { display: false }, order: 4 },
-                                { label: `ปี ${parseInt(targetYear)-2}`, data: seriesData[String(parseInt(targetYear)-2)], borderColor: colorY2, borderWidth: 2, pointRadius: 0, datalabels: { display: false }, order: 3 },
-                                { label: `ปี ${parseInt(targetYear)-1}`, data: seriesData[String(parseInt(targetYear)-1)], borderColor: colorY1, borderWidth: 2.5, pointRadius: 0, datalabels: { display: false }, order: 2 },
+                                { label: `ปี ${parseInt(targetYear)-3}`, data: seriesData[String(parseInt(targetYear)-3)], borderColor: colorY3, borderWidth: 2, pointRadius: 0, datalabels: { display: false }, order: 5 },
+                                { label: `ปี ${parseInt(targetYear)-2}`, data: seriesData[String(parseInt(targetYear)-2)], borderColor: colorY2, borderWidth: 2, pointRadius: 0, datalabels: { display: false }, order: 4 },
+                                { label: `ปี ${parseInt(targetYear)-1}`, data: seriesData[String(parseInt(targetYear)-1)], borderColor: colorY1, borderWidth: 2.5, pointRadius: 0, datalabels: { display: false }, order: 3 },
                                 
-                                // เส้นปัจจุบัน (สีแดงทึบ) ตัวเลขอยู่ด้านล่างจุด มีขอบขาวป้องกันการกลืน
                                 { 
                                     label: `ปี ${targetYear}`, data: actualData, borderColor: colorCurrent, backgroundColor: colorCurrent, borderWidth: 3.5, pointRadius: 4, 
                                     datalabels: { 
@@ -436,23 +460,28 @@
                                         textStrokeColor: '#ffffff', textStrokeWidth: 4, 
                                         formatter: v => v!==null ? v.toLocaleString() : '' 
                                     }, 
-                                    order: 1 
+                                    order: 2 
                                 },
-                                // เส้นประเป้าหมาย (อยู่บนสุด มีจุด และตัวเลขอยู่ด้านล่างจุด)
+                                // เส้นพยากรณ์ความน่าจะเป็น (แดงประ)
                                 { 
-                                    label: 'เป้าหมาย (-1%)', data: targetLine, borderColor: colorTarget, backgroundColor: colorTarget, borderDash: [5, 5], borderWidth: 2.5, pointRadius: 4, 
+                                    label: 'คาดการณ์ (สถิติ)', data: forecastLine, borderColor: colorForecast, backgroundColor: colorForecast, borderDash: [5, 5], borderWidth: 2.5, pointRadius: 4, 
                                     datalabels: { 
-                                        display: true, align: 'bottom', anchor: 'bottom', offset: 6, color: colorTarget, 
+                                        display: true, align: 'bottom', anchor: 'bottom', offset: 6, color: colorForecast, 
                                         font: { family: 'Kanit', size: 10, weight: 'bold' }, 
                                         textStrokeColor: '#ffffff', textStrokeWidth: 4, 
                                         formatter: (v, ctx) => {
                                             if(v === null) return '';
-                                            // ซ่อนตัวเลขที่จุดเชื่อมต่อกับเส้นปัจจุบัน ป้องกันตัวเลขปริ้นท์ทับกัน
                                             if(ctx.dataIndex === lastValidIndex) return ''; 
                                             return v.toLocaleString();
                                         }
                                     }, 
-                                    order: 0 
+                                    order: 0 // ดันให้อยู่บนสุด
+                                },
+                                // เส้นเป้าหมายสีเขียวประ (ซ่อนตัวเลขเพื่อไม่ให้รก)
+                                { 
+                                    label: 'เป้าหมาย (-1%)', data: targetLine, borderColor: colorTarget, borderDash: [4, 4], borderWidth: 2.5, pointRadius: 0, 
+                                    datalabels: { display: false }, 
+                                    order: 1 
                                 }
                             ]
                         },
@@ -461,11 +490,13 @@
                             plugins: { 
                                 legend: { 
                                     display: true, position: 'top', 
-                                    // เรียงสัญลักษณ์ (Reverse) ทำให้ 2566 ไป 2569 โชว์จากซ้ายไปขวา
-                                    reverse: true,
+                                    reverse: true, // 2566 -> 2569 จากซ้ายไปขวา
                                     labels: { 
                                         font: { family: 'Kanit', size: 10 }, boxWidth: 10, usePointStyle: true,
-                                        filter: function(item, chart) { return !item.text.includes('เป้าหมาย'); }
+                                        filter: function(item, chart) { 
+                                            // ซ่อนสัญลักษณ์เส้นประใน Legend (คำว่า 'เป้าหมาย', 'คาดการณ์')
+                                            return !item.text.includes('เป้าหมาย') && !item.text.includes('คาดการณ์'); 
+                                        }
                                     } 
                                 }, tooltip: { enabled: false } 
                             }, 
