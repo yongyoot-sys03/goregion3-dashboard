@@ -69,7 +69,7 @@
         <h2 class="text-2xl font-extrabold text-gray-800">สำนักงานไปรษณีย์เขต 3</h2>
         <p class="text-[12px] sm:text-[13px] text-green-600 font-bold mt-2 italic mb-6">"รู้รักษ์สิ่งแวดล้อม รู้ถนอมพลังงาน<br>รู้ใช้พอประมาณ รักษาองค์กรสีเขียวให้ยั่งยืน"</p>
         <div class="animate-spin inline-block w-12 h-12 border-[4px] border-current border-t-transparent text-blue-600 rounded-full mb-4"></div>
-        <p class="font-bold text-[#3b719f] animate-pulse text-sm sm:text-base">กำลังดึงข้อมูลและวิเคราะห์ผลเชิงลึก...</p>
+        <p class="font-bold text-[#3b719f] animate-pulse text-sm sm:text-base">กำลังดึงข้อมูลและประมวลผลเชิงลึก...</p>
     </div>
     <div id="error-msg" class="text-red-600 font-bold bg-red-100 p-4 rounded-xl w-full max-w-lg text-center hidden mb-4 mt-2"></div>
 
@@ -86,7 +86,6 @@
 
         <div class="neo-card p-5">
             <h3 class="font-extrabold text-gray-700 mb-4 text-center border-b border-gray-100 pb-2">🚦 สถานะเป้าหมาย (KPI Status)</h3>
-            <!-- จัดกึ่งกลางกรอบ KPI อย่างสมบูรณ์แบบ -->
             <div class="flex justify-center mb-4">
                 <div class="grid grid-cols-2 gap-x-8 sm:gap-x-12 gap-y-4 text-[13px] sm:text-sm font-bold text-gray-600 text-left w-fit">
                     <div class="flex items-center gap-2"><span id="dot-water" class="w-4 h-4 rounded-full bg-gray-300"></span> น้ำประปา</div>
@@ -127,7 +126,7 @@
             <h3 class="text-2xl font-extrabold text-gray-800">การใช้ทรัพยากรพลังงาน</h3>
             <h1 class="display-month-year text-xl font-bold text-[#e10b17] mt-1 drop-shadow-sm tracking-wide">...</h1>
             <p class="display-compare-text text-[12px] sm:text-[13px] text-gray-500 font-medium mt-1">...</p>
-            <p class="display-forecast-text hidden text-[11px] text-[#3b719f] font-bold mt-2 bg-blue-50 px-3 py-1.5 rounded-full inline-block">* เส้นประแสดงการคาดการณ์แนวโน้ม อ้างอิงสมมติฐานเป้าหมายลดลง 2% ต่อเดือน</p>
+            <p class="display-forecast-text hidden text-[11px] text-[#3b719f] font-bold mt-2 bg-blue-50 px-3 py-2 rounded-xl inline-block border border-blue-100">* เส้นประแสดง <span class="text-blue-700 underline">เป้าหมายที่ต้องควบคุม</span><br>(อ้างอิง: ลดลง 1% จากเดือนเดียวกันของปีที่ผ่านมา)</p>
         </div>
 
         <div class="neo-card p-5 space-y-3">
@@ -182,7 +181,7 @@
             <h3 class="text-2xl font-extrabold text-gray-800">การจัดการของเสีย</h3>
             <h1 class="display-month-year text-xl font-bold text-[#e10b17] mt-1 drop-shadow-sm tracking-wide">...</h1>
             <p class="display-compare-text text-[12px] sm:text-[13px] text-gray-500 font-medium mt-1">...</p>
-            <p class="display-forecast-text hidden text-[11px] text-[#3b719f] font-bold mt-2 bg-blue-50 px-3 py-1.5 rounded-full inline-block">* เส้นประแสดงการคาดการณ์แนวโน้ม อ้างอิงสมมติฐานเป้าหมายลดลง 2% ต่อเดือน</p>
+            <p class="display-forecast-text hidden text-[11px] text-[#3b719f] font-bold mt-2 bg-blue-50 px-3 py-2 rounded-xl inline-block border border-blue-100">* เส้นประแสดง <span class="text-blue-700 underline">เป้าหมายที่ต้องควบคุม</span><br>(อ้างอิง: ลดลง 1% จากเดือนเดียวกันของปีที่ผ่านมา)</p>
         </div>
 
         <div class="neo-card p-5 space-y-3">
@@ -218,7 +217,7 @@
             <h3 class="text-2xl font-extrabold text-gray-800">การปล่อยก๊าซเรือนกระจก</h3>
             <h1 class="display-month-year text-xl font-bold text-[#e10b17] mt-1 drop-shadow-sm tracking-wide">...</h1>
             <p class="display-compare-text text-[12px] sm:text-[13px] text-gray-500 font-medium mt-1">...</p>
-            <p class="display-forecast-text hidden text-[11px] text-[#3b719f] font-bold mt-2 bg-blue-50 px-3 py-1.5 rounded-full inline-block">* เส้นประแสดงการคาดการณ์แนวโน้ม อ้างอิงสมมติฐานเป้าหมายลดลง 2% ต่อเดือน</p>
+            <p class="display-forecast-text hidden text-[11px] text-[#3b719f] font-bold mt-2 bg-blue-50 px-3 py-2 rounded-xl inline-block border border-blue-100">* เส้นประแสดง <span class="text-blue-700 underline">เป้าหมายที่ต้องควบคุม</span><br>(อ้างอิง: ลดลง 1% จากเดือนเดียวกันของปีที่ผ่านมา)</p>
         </div>
 
         <div class="neo-card p-5 space-y-3">
@@ -314,7 +313,6 @@
             const compareString = `(เทียบกับผลการดำเนินงาน ${displayMonthCompare} ${prevYear})`;
             document.querySelectorAll('.display-compare-text').forEach(el => el.innerText = compareString);
             
-            // เปิด/ปิด คำอธิบายเส้นประล่วงหน้า
             if (data.month === "ทั้งปี") {
                 document.querySelectorAll('.display-forecast-text').forEach(el => el.classList.remove('hidden'));
             } else {
@@ -329,7 +327,6 @@
                 if(!container) return;
                 const found = (data.analysis || []).find(item => item.category === keyword);
                 if(found) {
-                    // แปลง \n จาก Google Sheet ให้เป็นการขึ้นบรรทัดใหม่ใน HTML
                     const actionHtml = found.action.replace(/\n/g, '<br>');
                     container.innerHTML = `<p class="mb-2"><strong>🔍 ปัจจัยและสาเหตุ:</strong> ${found.cause}</p><p><strong>🎯 แนวทาง/มาตรการ:</strong><br>${actionHtml}</p>`;
                     container.classList.remove('hidden');
@@ -374,10 +371,14 @@
             } 
         }
 
+        // ================= 📈 สมการวาดกราฟแบบใหม่ (เป้าหมาย 1%) =================
         function renderCharts() {
             if(!globalChartData) return;
             const monthVal = document.getElementById('select-month').value;
             const isFullYear = (monthVal === "ทั้งปี");
+            const targetYear = document.getElementById('select-year').value; // เอาไว้ดึงข้อมูลปีก่อน
+            const prevYearStr = String(parseInt(targetYear) - 1); 
+            
             const monthsArr = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
             const mIndex = monthsArr.indexOf(monthVal);
 
@@ -388,23 +389,26 @@
                 const ctx = document.getElementById(canvasId).getContext('2d');
                 
                 if (isFullYear) {
-                    // วาดกราฟเส้น พร้อมเส้นพยากรณ์ล่วงหน้า
-                    let actual69 = [...seriesData['2569']];
-                    let forecast69 = new Array(12).fill(null);
+                    let actualData = [...(seriesData[targetYear] || new Array(12).fill(null))];
+                    let prevData = seriesData[prevYearStr] || new Array(12).fill(0);
+                    let targetLine = new Array(12).fill(null);
                     
-                    let lastValidIndex = -1, lastValidValue = 0;
+                    let lastValidIndex = -1;
                     for(let i=0; i<12; i++) { 
-                        if(actual69[i] !== null && actual69[i] > 0) { 
-                            lastValidIndex = i; lastValidValue = actual69[i]; 
+                        if(actualData[i] !== null && actualData[i] > 0) { 
+                            lastValidIndex = i; 
                         } 
                     }
-                    // สร้างข้อมูลคาดการณ์ 3 เดือนถัดไปโดยอิงเป้าหมายลดลง 2%
+                    
+                    // เส้นเป้าหมาย (เริ่มวาดจากเดือนล่าสุดที่กรอก ไปจนถึงสิ้นปี)
                     if(lastValidIndex !== -1 && lastValidIndex < 11) {
-                        forecast69[lastValidIndex] = lastValidValue; // เชื่อมเส้นกราฟ
-                        let currentVal = lastValidValue;
+                        targetLine[lastValidIndex] = actualData[lastValidIndex]; // เชื่อมเส้นให้สวยงาม
                         for(let i = lastValidIndex + 1; i < 12; i++) {
-                            currentVal = currentVal * 0.98; // ลด 2%
-                            forecast69[i] = Math.round(currentVal);
+                            if(prevData[i] > 0) {
+                                targetLine[i] = Math.round(prevData[i] * 0.99); // ลบ 1% จากเดือนเดียวกันของปีที่แล้ว
+                            } else {
+                                targetLine[i] = targetLine[i-1]; // ถ้าปีที่แล้วไม่มีข้อมูล ให้ลากเส้นตรง
+                            }
                         }
                     }
 
@@ -416,8 +420,8 @@
                                 { label: 'ปี 2566', data: seriesData['2566'], borderColor: '#9ca3af', borderWidth: 2, pointRadius: 0, datalabels: { display: false } },
                                 { label: 'ปี 2567', data: seriesData['2567'], borderColor: '#f59e0b', borderWidth: 2, pointRadius: 0, datalabels: { display: false } },
                                 { label: 'ปี 2568', data: seriesData['2568'], borderColor: '#3b82f6', borderWidth: 2, pointRadius: 0, datalabels: { display: false } },
-                                { label: 'ปี 2569', data: actual69, borderColor: mainColor, backgroundColor: mainColor, borderWidth: 2.5, pointRadius: 3, datalabels: { display: true, align: 'top', offset: 2, color: mainColor, font: { family: 'Kanit', size: 9, weight: 'bold' }, formatter: v => v!==null ? v.toLocaleString() : '' } },
-                                { label: 'คาดการณ์ (เส้นประ)', data: forecast69, borderColor: '#3b719f', borderDash: [5, 5], borderWidth: 2, pointRadius: 2, datalabels: { display: true, align: 'bottom', offset: 4, color: '#3b719f', font: { family: 'Kanit', size: 9 }, formatter: v => v!==null ? v.toLocaleString() : '' } }
+                                { label: `ปี ${targetYear}`, data: actualData, borderColor: mainColor, backgroundColor: mainColor, borderWidth: 2.5, pointRadius: 3, datalabels: { display: true, align: 'top', offset: 2, color: mainColor, font: { family: 'Kanit', size: 9, weight: 'bold' }, formatter: v => v!==null ? v.toLocaleString() : '' } },
+                                { label: 'เป้าหมาย (ลด 1%)', data: targetLine, borderColor: '#3b719f', borderDash: [5, 5], borderWidth: 2, pointRadius: 2, datalabels: { display: true, align: 'bottom', offset: 4, color: '#3b719f', font: { family: 'Kanit', size: 9 }, formatter: v => v!==null ? v.toLocaleString() : '' } }
                             ]
                         },
                         options: { 
