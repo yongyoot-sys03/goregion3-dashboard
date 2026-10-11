@@ -69,7 +69,7 @@
         <h2 class="text-2xl font-extrabold text-gray-800">สำนักงานไปรษณีย์เขต 3</h2>
         <p class="text-[12px] sm:text-[13px] text-green-600 font-bold mt-2 italic mb-6">"รู้รักษ์สิ่งแวดล้อม รู้ถนอมพลังงาน<br>รู้ใช้พอประมาณ รักษาองค์กรสีเขียวให้ยั่งยืน"</p>
         <div class="animate-spin inline-block w-12 h-12 border-[4px] border-current border-t-transparent text-blue-600 rounded-full mb-4"></div>
-        <p class="font-bold text-[#3b719f] animate-pulse text-sm sm:text-base">กำลังประมวลผลข้อมูลและดึงสถิติย้อนหลัง...</p>
+        <p class="font-bold text-[#3b719f] animate-pulse text-sm sm:text-base">กำลังดึงข้อมูลและประมวลผลเชิงลึก...</p>
     </div>
     <div id="error-msg" class="text-red-600 font-bold bg-red-100 p-4 rounded-xl w-full max-w-lg text-center hidden mb-4 mt-2"></div>
 
@@ -328,8 +328,7 @@
                 const found = (data.analysis || []).find(item => item.category === keyword);
                 if(found) {
                     const actionHtml = found.action.replace(/\n/g, '<br>');
-                    // โชว์ Trend ที่มาจาก AI ด้วย
-                    const trendHtml = found.trend ? `<p class="mb-2 text-[#3b719f] bg-white p-2 rounded-lg border border-blue-100"><strong>📊 แนวโน้มย้อนหลัง:</strong> ${found.trend}</p>` : '';
+                    const trendHtml = found.trend ? `<p class="mb-3 text-[#3b719f] bg-white p-2.5 rounded-lg border border-blue-200"><strong>📊 แนวโน้มย้อนหลัง:</strong><br>${found.trend}</p>` : '';
                     container.innerHTML = `${trendHtml}<p class="mb-2"><strong>🔍 ปัจจัยและสาเหตุ:</strong> ${found.cause}</p><p><strong>🎯 แนวทาง/มาตรการ:</strong><br>${actionHtml}</p>`;
                     container.classList.remove('hidden');
                 } else {
@@ -373,7 +372,7 @@
             } 
         }
 
-        // ================= 📈 สมการวาดกราฟ (อัปเดตโทนสีประวัติย้อนหลัง) =================
+        // ================= 📈 จัดการสีกราฟและการจัดเรียง Layer เส้น =================
         function renderCharts() {
             if(!globalChartData) return;
             const monthVal = document.getElementById('select-month').value;
@@ -384,18 +383,19 @@
             const monthsArr = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
             const mIndex = monthsArr.indexOf(monthVal);
 
-            function createSmartChart(canvasId, mainColor, seriesData) {
+            // โทนสีใหม่ตามที่คุณต้องการ
+            const colorY3 = '#4b5563'; // 2566: เทาเข้ม
+            const colorY2 = '#2563eb'; // 2567: น้ำเงิน
+            const colorY1 = '#eab308'; // 2568: เหลือง
+            const colorCurrent = '#dc2626'; // 2569: แดง
+            const colorTarget = '#dc2626'; // เส้นประ: แดง
+
+            function createSmartChart(canvasId, seriesData) {
                 if(!document.getElementById(canvasId)) return;
                 if(chartsInstance[canvasId]) chartsInstance[canvasId].destroy();
                 
                 const ctx = document.getElementById(canvasId).getContext('2d');
                 
-                // --- ตั้งค่าสีประวัติย้อนหลัง ให้เป็นโทน Grayscale ไล่ระดับความเข้ม ---
-                const colorY3 = '#d1d5db'; // สีเทาอ่อนสุด (ปี -3)
-                const colorY2 = '#9ca3af'; // สีเทากลาง (ปี -2)
-                const colorY1 = '#475569'; // สีเทาเข้ม (ปี -1, เป็นฐานอ้างอิงชัดเจน)
-                const colorTarget = '#ef4444'; // สีแดงเส้นประ (เป้าหมาย 1%)
-
                 if (isFullYear) {
                     let actualData = [...(seriesData[targetYear] || new Array(12).fill(null))];
                     let prevData = seriesData[prevYearStr] || new Array(12).fill(0);
@@ -408,12 +408,11 @@
                         } 
                     }
                     
-                    // เส้นเป้าหมายสีแดง (เริ่มวาดจากเดือนล่าสุด ไปจนสิ้นปี โดยลดลง 1% จากปีที่แล้ว)
                     if(lastValidIndex !== -1 && lastValidIndex < 11) {
-                        targetLine[lastValidIndex] = actualData[lastValidIndex]; // จุดเชื่อมต่อให้เส้นสวยงาม
+                        targetLine[lastValidIndex] = actualData[lastValidIndex]; 
                         for(let i = lastValidIndex + 1; i < 12; i++) {
                             if(prevData[i] > 0) {
-                                targetLine[i] = Math.round(prevData[i] * 0.99); // เป้าหมาย: ลดลง 1% จากเดือนเดียวกันปีที่แล้ว
+                                targetLine[i] = Math.round(prevData[i] * 0.99); 
                             } else {
                                 targetLine[i] = targetLine[i-1];
                             }
@@ -425,15 +424,20 @@
                         data: {
                             labels: monthsArr,
                             datasets: [
-                                { label: `ปี ${parseInt(targetYear)-3}`, data: seriesData[String(parseInt(targetYear)-3)], borderColor: colorY3, borderWidth: 2, pointRadius: 0, datalabels: { display: false } },
-                                { label: `ปี ${parseInt(targetYear)-2}`, data: seriesData[String(parseInt(targetYear)-2)], borderColor: colorY2, borderWidth: 2, pointRadius: 0, datalabels: { display: false } },
-                                { label: `ปี ${parseInt(targetYear)-1}`, data: seriesData[String(parseInt(targetYear)-1)], borderColor: colorY1, borderWidth: 2.5, pointRadius: 0, datalabels: { display: false } },
-                                { label: `ปี ${targetYear}`, data: actualData, borderColor: mainColor, backgroundColor: mainColor, borderWidth: 3.5, pointRadius: 3, datalabels: { display: true, align: 'top', offset: 2, color: mainColor, font: { family: 'Kanit', size: 9, weight: 'bold' }, formatter: v => v!==null ? v.toLocaleString() : '' } },
-                                { label: 'เป้าหมาย (-1%)', data: targetLine, borderColor: colorTarget, borderDash: [5, 5], borderWidth: 2, pointRadius: 0, datalabels: { display: true, align: 'bottom', offset: 4, color: colorTarget, font: { family: 'Kanit', size: 9 }, formatter: v => v!==null ? v.toLocaleString() : '' } }
+                                // order ยิ่งน้อย ยิ่งแสดงอยู่ด้านบนสุด
+                                { label: `ปี ${parseInt(targetYear)-3}`, data: seriesData[String(parseInt(targetYear)-3)], borderColor: colorY3, borderWidth: 2, pointRadius: 0, datalabels: { display: false }, order: 4 },
+                                { label: `ปี ${parseInt(targetYear)-2}`, data: seriesData[String(parseInt(targetYear)-2)], borderColor: colorY2, borderWidth: 2, pointRadius: 0, datalabels: { display: false }, order: 3 },
+                                { label: `ปี ${parseInt(targetYear)-1}`, data: seriesData[String(parseInt(targetYear)-1)], borderColor: colorY1, borderWidth: 2.5, pointRadius: 0, datalabels: { display: false }, order: 2 },
+                                // เส้นปัจจุบัน (สีแดงทึบ)
+                                { label: `ปี ${targetYear}`, data: actualData, borderColor: colorCurrent, backgroundColor: colorCurrent, borderWidth: 3.5, pointRadius: 4, 
+                                    datalabels: { display: true, align: 'top', offset: 4, color: colorCurrent, backgroundColor: 'rgba(255,255,255,0.75)', borderRadius: 4, font: { family: 'Kanit', size: 9, weight: 'bold' }, formatter: v => v!==null ? v.toLocaleString() : '' }, order: 1 },
+                                // เส้นประเป้าหมาย (สีแดงประ ให้อยู่บนสุด)
+                                { label: 'เป้าหมาย (-1%)', data: targetLine, borderColor: colorTarget, borderDash: [5, 5], borderWidth: 2.5, pointRadius: 0, 
+                                    datalabels: { display: true, align: 'bottom', offset: 4, color: colorTarget, backgroundColor: 'rgba(255,255,255,0.75)', borderRadius: 4, font: { family: 'Kanit', size: 9, weight: 'bold' }, formatter: v => v!==null ? v.toLocaleString() : '' }, order: 0 }
                             ]
                         },
                         options: { 
-                            responsive: true, maintainAspectRatio: false, layout: { padding: { top: 15, right: 10, left: 5 } }, 
+                            responsive: true, maintainAspectRatio: false, layout: { padding: { top: 15, right: 10, left: 5, bottom: 5 } }, 
                             plugins: { legend: { display: true, position: 'top', labels: { font: { family: 'Kanit', size: 10 }, boxWidth: 10, usePointStyle: true } }, tooltip: { enabled: false } }, 
                             scales: { y: { display: false }, x: { ticks: { font: { family: 'Kanit', size: 9 }, color: '#9ca3af' }, grid: { display: false } } } 
                         }
@@ -444,7 +448,7 @@
                         type: 'bar', plugins: [ChartDataLabels],
                         data: {
                             labels: [`ปี ${parseInt(targetYear)-3}`, `ปี ${parseInt(targetYear)-2}`, `ปี ${parseInt(targetYear)-1}`, `ปี ${targetYear}`],
-                            datasets: [{ data: barData, backgroundColor: [colorY3, colorY2, colorY1, mainColor], borderRadius: 4 }]
+                            datasets: [{ data: barData, backgroundColor: [colorY3, colorY2, colorY1, colorCurrent], borderRadius: 4 }]
                         },
                         options: { 
                             responsive: true, maintainAspectRatio: false, layout: { padding: { top: 20 } }, 
@@ -455,17 +459,17 @@
                 }
             }
             if(currentTab === 'energy') {
-                createSmartChart('chartPower', '#dc2626', globalChartData.power);
-                createSmartChart('chartOil', '#f97316', globalChartData.oil);
-                createSmartChart('chartWater', '#3b82f6', globalChartData.water);
-                createSmartChart('chartPaper', '#10b981', globalChartData.paper);
+                createSmartChart('chartPower', globalChartData.power);
+                createSmartChart('chartOil', globalChartData.oil);
+                createSmartChart('chartWater', globalChartData.water);
+                createSmartChart('chartPaper', globalChartData.paper);
             }
             if(currentTab === 'waste') {
-                createSmartChart('chartGenWaste', '#9333ea', globalChartData.waste);
-                createSmartChart('chartRecycle', '#9333ea', globalChartData.recycle);
+                createSmartChart('chartGenWaste', globalChartData.waste);
+                createSmartChart('chartRecycle', globalChartData.recycle);
             }
             if(currentTab === 'ghg') {
-                createSmartChart('chartGHG', '#475569', globalChartData.ghg);
+                createSmartChart('chartGHG', globalChartData.ghg);
             }
         }
 
