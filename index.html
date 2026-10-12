@@ -84,23 +84,86 @@
             <p class="display-month-year text-sm text-gray-500 font-semibold mt-2">กรุณากดเรียกดูข้อมูล</p>
         </div>
 
-        <div class="neo-card p-5">
-            <h3 class="font-extrabold text-gray-700 mb-4 text-center border-b border-gray-100 pb-2">🚦 สถานะเป้าหมาย (KPI Status)</h3>
-            <div class="flex justify-center mb-4">
-                <div class="grid grid-cols-2 gap-x-8 sm:gap-x-12 gap-y-4 text-[13px] sm:text-sm font-bold text-gray-600 text-left w-fit">
-                    <div class="flex items-center gap-2"><span id="dot-water" class="w-4 h-4 rounded-full bg-gray-300"></span> น้ำประปา</div>
-                    <div class="flex items-center gap-2"><span id="dot-power" class="w-4 h-4 rounded-full bg-gray-300"></span> ไฟฟ้า</div>
-                    <div class="flex items-center gap-2"><span id="dot-oil" class="w-4 h-4 rounded-full bg-gray-300"></span> น้ำมันเชื้อเพลิง</div>
-                    <div class="flex items-center gap-2"><span id="dot-paper" class="w-4 h-4 rounded-full bg-gray-300"></span> กระดาษ</div>
-                    <div class="flex items-center gap-2"><span id="dot-genWaste" class="w-4 h-4 rounded-full bg-gray-300"></span> ขยะทั่วไป</div>
-                    <div class="flex items-center gap-2"><span id="dot-recycle" class="w-4 h-4 rounded-full bg-gray-300"></span> ขยะรีไซเคิล</div>
-                    <div class="flex items-center gap-2 col-span-2 justify-center mt-1"><span id="dot-ghg" class="w-4 h-4 rounded-full bg-gray-300"></span> ก๊าซเรือนกระจก</div>
+        <div class="neo-card p-4 sm:p-5">
+            <h3 class="font-extrabold text-gray-700 mb-4 text-center border-b border-gray-100 pb-2">🚦 สถานะเป้าหมาย (KPI Score Card)</h3>
+            
+            <div class="grid grid-cols-2 gap-3 mb-2">
+                <!-- น้ำประปา -->
+                <div id="exec-card-water" class="bg-gray-50 border border-gray-200 rounded-2xl p-3 flex flex-col relative shadow-sm transition-all">
+                    <div id="exec-icon-water" class="absolute top-2 right-2 flex items-center justify-center"></div>
+                    <div class="flex items-center gap-1.5 w-full justify-start">
+                        <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Droplet/3D/droplet_3d.png" class="w-5 h-5 drop-shadow-sm" crossorigin="anonymous">
+                        <span class="font-extrabold text-gray-700 text-[12px]">น้ำประปา</span>
+                    </div>
+                    <div id="exec-val-water" class="text-xl font-black tracking-tighter text-gray-400 mt-2 leading-none">-</div>
+                    <div id="exec-text-water" class="text-[10px] font-bold text-gray-400 mt-1 leading-tight">-</div>
                 </div>
-            </div>
-            <div class="text-[11px] text-center text-gray-500 bg-gray-50 p-2 rounded-lg border border-gray-100">
-                <span class="font-bold underline">หมายเหตุ:</span><br>
-                <span class="inline-block mr-3"><span class="w-2.5 h-2.5 inline-block rounded-full bg-green-500 relative top-[1px]"></span> สีเขียว = ผ่านเกณฑ์ / ลดลง</span>
-                <span class="inline-block"><span class="w-2.5 h-2.5 inline-block rounded-full bg-red-500 relative top-[1px]"></span> สีแดง = ไม่ผ่านเกณฑ์ / เพิ่มขึ้น</span>
+
+                <!-- ไฟฟ้า -->
+                <div id="exec-card-power" class="bg-gray-50 border border-gray-200 rounded-2xl p-3 flex flex-col relative shadow-sm transition-all">
+                    <div id="exec-icon-power" class="absolute top-2 right-2 flex items-center justify-center"></div>
+                    <div class="flex items-center gap-1.5 w-full justify-start">
+                        <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/High%20voltage/3D/high_voltage_3d.png" class="w-5 h-5 drop-shadow-sm" crossorigin="anonymous">
+                        <span class="font-extrabold text-gray-700 text-[12px]">ไฟฟ้า</span>
+                    </div>
+                    <div id="exec-val-power" class="text-xl font-black tracking-tighter text-gray-400 mt-2 leading-none">-</div>
+                    <div id="exec-text-power" class="text-[10px] font-bold text-gray-400 mt-1 leading-tight">-</div>
+                </div>
+
+                <!-- น้ำมันเชื้อเพลิง -->
+                <div id="exec-card-oil" class="bg-gray-50 border border-gray-200 rounded-2xl p-3 flex flex-col relative shadow-sm transition-all">
+                    <div id="exec-icon-oil" class="absolute top-2 right-2 flex items-center justify-center"></div>
+                    <div class="flex items-center gap-1.5 w-full justify-start">
+                        <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Fuel%20pump/3D/fuel_pump_3d.png" class="w-5 h-5 drop-shadow-sm" crossorigin="anonymous">
+                        <span class="font-extrabold text-gray-700 text-[12px]">น้ำมันเชื้อเพลิง</span>
+                    </div>
+                    <div id="exec-val-oil" class="text-xl font-black tracking-tighter text-gray-400 mt-2 leading-none">-</div>
+                    <div id="exec-text-oil" class="text-[10px] font-bold text-gray-400 mt-1 leading-tight">-</div>
+                </div>
+
+                <!-- กระดาษ -->
+                <div id="exec-card-paper" class="bg-gray-50 border border-gray-200 rounded-2xl p-3 flex flex-col relative shadow-sm transition-all">
+                    <div id="exec-icon-paper" class="absolute top-2 right-2 flex items-center justify-center"></div>
+                    <div class="flex items-center gap-1.5 w-full justify-start">
+                        <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Page%20facing%20up/3D/page_facing_up_3d.png" class="w-5 h-5 drop-shadow-sm" crossorigin="anonymous">
+                        <span class="font-extrabold text-gray-700 text-[12px]">กระดาษ</span>
+                    </div>
+                    <div id="exec-val-paper" class="text-xl font-black tracking-tighter text-gray-400 mt-2 leading-none">-</div>
+                    <div id="exec-text-paper" class="text-[10px] font-bold text-gray-400 mt-1 leading-tight">-</div>
+                </div>
+
+                <!-- ขยะทั่วไป -->
+                <div id="exec-card-genWaste" class="bg-gray-50 border border-gray-200 rounded-2xl p-3 flex flex-col relative shadow-sm transition-all">
+                    <div id="exec-icon-genWaste" class="absolute top-2 right-2 flex items-center justify-center"></div>
+                    <div class="flex items-center gap-1.5 w-full justify-start">
+                        <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Wastebasket/3D/wastebasket_3d.png" class="w-5 h-5 drop-shadow-sm" crossorigin="anonymous">
+                        <span class="font-extrabold text-gray-700 text-[12px]">ขยะทั่วไป</span>
+                    </div>
+                    <div id="exec-val-genWaste" class="text-xl font-black tracking-tighter text-gray-400 mt-2 leading-none">-</div>
+                    <div id="exec-text-genWaste" class="text-[10px] font-bold text-gray-400 mt-1 leading-tight">-</div>
+                </div>
+
+                <!-- ขยะรีไซเคิล -->
+                <div id="exec-card-recycle" class="bg-gray-50 border border-gray-200 rounded-2xl p-3 flex flex-col relative shadow-sm transition-all">
+                    <div id="exec-icon-recycle" class="absolute top-2 right-2 flex items-center justify-center"></div>
+                    <div class="flex items-center gap-1.5 w-full justify-start">
+                        <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Recycling%20symbol/3D/recycling_symbol_3d.png" class="w-5 h-5 drop-shadow-sm" crossorigin="anonymous">
+                        <span class="font-extrabold text-gray-700 text-[12px]">ขยะรีไซเคิล</span>
+                    </div>
+                    <div id="exec-val-recycle" class="text-xl font-black tracking-tighter text-gray-400 mt-2 leading-none">-</div>
+                    <div id="exec-text-recycle" class="text-[10px] font-bold text-gray-400 mt-1 leading-tight">-</div>
+                </div>
+
+                <!-- ก๊าซเรือนกระจก -->
+                <div id="exec-card-ghg" class="col-span-2 bg-gray-50 border border-gray-200 rounded-2xl p-3 flex flex-col relative shadow-sm items-center text-center transition-all">
+                    <div id="exec-icon-ghg" class="absolute top-3 right-4 flex items-center justify-center"></div>
+                    <div class="flex items-center gap-2 w-full justify-center">
+                        <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Cloud/3D/cloud_3d.png" class="w-6 h-6 drop-shadow-sm" crossorigin="anonymous">
+                        <span class="font-extrabold text-gray-700 text-[13px]">ก๊าซเรือนกระจก</span>
+                    </div>
+                    <div id="exec-val-ghg" class="text-2xl font-black tracking-tighter text-gray-400 mt-2 leading-none">-</div>
+                    <div id="exec-text-ghg" class="text-[11px] font-bold text-gray-400 mt-1 leading-tight">-</div>
+                </div>
             </div>
         </div>
 
@@ -353,6 +416,8 @@
             const updateVal = (type, info) => {
                 if(!info) return;
                 const isRed = info.status === 'red';
+                
+                // --- สำหรับหน้ากราฟรายละเอียด ---
                 const valEl = document.getElementById(`val-${type}`);
                 if(valEl) {
                     valEl.innerText = info.percent;
@@ -366,8 +431,30 @@
                 const iconEl = document.getElementById(`icon-${type}`);
                 if(iconEl) iconEl.innerHTML = isRed ? frownIcon : smileIcon;
 
-                const dot = document.getElementById(`dot-${type}`);
-                if(dot) dot.className = `w-4 h-4 rounded-full ${isRed ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]' : 'bg-green-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]'}`;
+                // --- สำหรับหน้าบทสรุป (Score Card) โฉมใหม่ ---
+                // ใช้ ghg แทน ghgTotal หากมีปัญหาเรียกซ้ำ
+                let targetType = type === 'ghgTotal' ? 'ghg' : type;
+                
+                const execCard = document.getElementById(`exec-card-${targetType}`);
+                if(execCard) {
+                    execCard.className = `border rounded-2xl p-3 flex flex-col relative shadow-sm transition-all ${isRed ? 'bg-red-50/60 border-red-200' : 'bg-green-50/60 border-green-200'}`;
+                }
+                const execVal = document.getElementById(`exec-val-${targetType}`);
+                if(execVal) {
+                    execVal.innerText = info.percent;
+                    execVal.className = `text-xl font-black tracking-tighter mt-2 leading-none drop-shadow-sm ${isRed ? 'text-red-600' : 'text-green-600'}`;
+                }
+                const execText = document.getElementById(`exec-text-${targetType}`);
+                if(execText) {
+                    execText.innerText = info.text;
+                    execText.className = `text-[10px] font-bold mt-1 leading-tight ${isRed ? 'text-red-700' : 'text-green-700'}`;
+                }
+                const execIcon = document.getElementById(`exec-icon-${targetType}`);
+                if(execIcon) {
+                    let smFrown = `<img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Worried%20face/3D/worried_face_3d.png" crossorigin="anonymous" class="w-[22px] h-[22px] drop-shadow-sm">`;
+                    let smSmile = `<img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Smiling%20face%20with%20smiling%20eyes/3D/smiling_face_with_smiling_eyes_3d.png" crossorigin="anonymous" class="w-[22px] h-[22px] drop-shadow-sm">`;
+                    execIcon.innerHTML = isRed ? smFrown : smSmile;
+                }
             };
 
             if(!data.energy.error) { 
@@ -397,12 +484,12 @@
             const monthsArr = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
             const mIndex = monthsArr.indexOf(monthVal);
 
-            const colorY3 = '#4b5563'; // 2566
-            const colorY2 = '#2563eb'; // 2567
-            const colorY1 = '#eab308'; // 2568
-            const colorCurrent = '#dc2626'; // 2569 แดงทึบ
-            const colorForecast = '#ef4444'; // พยากรณ์ แดงประ
-            const colorTarget = '#10b981'; // เป้าหมาย เขียวประ
+            const colorY3 = '#4b5563'; 
+            const colorY2 = '#2563eb'; 
+            const colorY1 = '#eab308'; 
+            const colorCurrent = '#dc2626'; 
+            const colorForecast = '#ef4444'; 
+            const colorTarget = '#10b981'; 
 
             function createSmartChart(canvasId, seriesData) {
                 if(!document.getElementById(canvasId)) return;
@@ -413,7 +500,6 @@
                 if (isFullYear) {
                     let actualData = (seriesData && seriesData[targetYear]) ? [...seriesData[targetYear]] : new Array(12).fill(null);
                     let prevData = (seriesData && seriesData[prevYearStr]) ? seriesData[prevYearStr] : new Array(12).fill(0);
-                    
                     let forecastLine = new Array(12).fill(null);
                     let targetLine = new Array(12).fill(null);
                     
@@ -488,7 +574,6 @@
                                         textStrokeColor: '#ffffff', textStrokeWidth: 4, 
                                         formatter: (v, ctx) => {
                                             if(v === null) return '';
-                                            // ซ่อนตัวเลขที่ทับกับจุดสุดท้ายของเส้นปัจจุบัน
                                             if(ctx.dataIndex === lastValidIndex) return ''; 
                                             return v.toLocaleString();
                                         }
@@ -508,7 +593,7 @@
                             plugins: { 
                                 legend: { 
                                     display: true, position: 'top', 
-                                    reverse: true, // แสดง Legend จากซ้ายไปขวา (2569 -> 2566)
+                                    reverse: true,
                                     labels: { 
                                         font: { family: 'Kanit', size: 10 }, boxWidth: 10, usePointStyle: true,
                                         filter: function(item, chart) { 
