@@ -391,10 +391,13 @@
             globalChartData = data.chartData;
             if(currentTab === '') switchTab('exec'); else switchTab(currentTab);
             
-            const displayMonthTitle = data.month === "ทั้งปี" ? "สรุปภาพรวมสะสม (YTD)" : `เดือน ${data.month}`;
-            const displayMonthCompare = data.month === "ทั้งปี" ? "ยอดสะสม (YTD)" : `เดือน ${data.month}`;
             const targetYear = parseInt(data.year);
             const prevYear = targetYear - 1;
+            
+            // อัปเดต: ใช้ค่า ytdRange ที่รับมาจากหลังบ้านมาแสดงผลแบบอัตโนมัติ
+            let rangeText = data.ytdRange ? ` (${data.ytdRange})` : " (YTD)";
+            const displayMonthTitle = data.month === "ทั้งปี" ? `สรุปภาพรวมสะสม${rangeText}` : `เดือน ${data.month}`;
+            const displayMonthCompare = data.month === "ทั้งปี" ? `ยอดสะสม${rangeText}` : `เดือน ${data.month}`;
             
             document.querySelectorAll('.display-month-year').forEach(el => el.innerText = `${displayMonthTitle} ${targetYear}`);
             if(document.getElementById('exec-display-month')) document.getElementById('exec-display-month').innerText = `${displayMonthTitle} ${targetYear}`;
@@ -465,7 +468,6 @@
                     execText.className = `${textSizeClass} font-bold mt-2 leading-tight w-full text-center ${isRed ? 'text-red-700' : 'text-green-700'}`;
                 }
                 
-                // อัปเดตเงื่อนไขให้รองรับกรณี "ไม่ได้ระบุ"
                 const execNote = document.getElementById(`exec-note-${targetType}`);
                 if(execNote) {
                     if(targetType === 'recycle') {
@@ -506,7 +508,6 @@
             } 
         }
 
-        // ================= 📈 วาดกราฟ: อัปเดตซ่อนเส้นกรณี "ไม่ได้ระบุ" =================
         function renderCharts() {
             if(!globalChartData) return;
             const monthVal = document.getElementById('select-month').value;
@@ -547,7 +548,6 @@
                     targetLabelName = `เป้าหมาย (-${specificTargetPct}%)`;
                 }
                 
-                // ตรวจสอบเพื่อซ่อนเส้นกราฟ
                 if (rawNoteText.includes('ไม่ได้ระบุเป้าหมาย')) {
                     specificTargetPct = "ไม่ได้ระบุ";
                 }
@@ -597,7 +597,7 @@
                         }
                     } else {
                         if (specificTargetPct === "ไม่ได้ระบุ") {
-                            for(let i = 0; i < 12; i++) targetLine[i] = null; // ซ่อนเส้นประ
+                            for(let i = 0; i < 12; i++) targetLine[i] = null; 
                         } else {
                             let multiplier = 1 - (specificTargetPct / 100);
                             for(let i = 0; i < 12; i++) {
