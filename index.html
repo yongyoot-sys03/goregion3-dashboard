@@ -85,95 +85,96 @@
             <h3 class="text-[16px] text-[#3b719f] font-bold mt-1">บทสรุปผลการดำเนินงาน</h3>
             <!-- เปลี่ยนสีแดงตัวใหญ่ และเพิ่มข้อความเปรียบเทียบ -->
             <p id="exec-display-month" class="text-xl text-red-600 font-black mt-2 tracking-wide">กรุณากดเรียกดูข้อมูล</p>
-            <p id="exec-display-compare" class="text-[15px] text-gray-700 font-extrabold mt-1">-</p>
+            <p id="exec-display-compare" class="text-[14px] text-gray-600 font-bold mt-1">-</p>
         </div>
 
         <div class="neo-card p-4 sm:p-5">
             <h3 class="font-extrabold text-gray-700 mb-4 text-center border-b border-gray-100 pb-2">🚦 สถานะเป้าหมาย (KPI Score Card)</h3>
             
             <div class="grid grid-cols-2 gap-3 mb-2">
-                <!-- ก๊าซเรือนกระจก (ย้ายขึ้นบนสุด เต็มแถว ขยายขนาด) -->
+                <!-- ก๊าซเรือนกระจก (ย้ายขึ้นบนสุด เต็มแถว ขยายขนาดใหญ่พิเศษ) -->
                 <div id="exec-card-ghg" class="col-span-2 bg-gray-50 border border-gray-200 rounded-3xl p-5 flex flex-col relative shadow-md items-center text-center transition-all mb-2">
-                    <div id="exec-icon-ghg" class="absolute top-4 right-5 flex items-center justify-center"></div>
+                    <div id="exec-icon-ghg" class="absolute top-4 right-4 flex items-center justify-center"></div>
                     <div class="flex items-center gap-2 w-full justify-center mb-1">
                         <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Cloud/3D/cloud_3d.png" class="w-7 h-7 drop-shadow-sm" crossorigin="anonymous">
                         <span class="font-extrabold text-gray-800 text-[16px]">ก๊าซเรือนกระจก</span>
                     </div>
-                    <div id="exec-val-ghg" class="text-4xl font-black tracking-tighter text-gray-400 mt-2 leading-none w-full text-center">-</div>
-                    <div id="exec-text-ghg" class="text-[14px] font-bold text-gray-400 mt-2.5 leading-tight w-full text-center">-</div>
+                    <div id="exec-val-ghg" class="text-[40px] font-black tracking-tighter text-gray-400 mt-2 leading-none w-full text-center">-</div>
+                    <div id="exec-text-ghg" class="text-[13px] font-bold text-gray-400 mt-2.5 leading-tight w-full text-center">-</div>
                     <div id="exec-note-ghg" class="text-[10px] text-gray-500 font-medium mt-1.5 w-full text-center">-</div>
                 </div>
 
                 <!-- น้ำประปา -->
                 <div id="exec-card-water" class="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col relative shadow-sm items-center text-center transition-all">
-                    <div id="exec-icon-water" class="absolute top-2.5 right-2.5 flex items-center justify-center"></div>
+                    <div id="exec-icon-water" class="absolute top-2 right-1.5 flex items-center justify-center"></div>
                     <div class="flex items-center gap-1.5 w-full justify-center">
                         <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Droplet/3D/droplet_3d.png" class="w-5 h-5 drop-shadow-sm" crossorigin="anonymous">
                         <span class="font-extrabold text-gray-700 text-[14px]">น้ำประปา</span>
                     </div>
-                    <div id="exec-val-water" class="text-[26px] font-black tracking-tighter text-gray-400 mt-2.5 leading-none w-full text-center">-</div>
+                    <div id="exec-val-water" class="text-[28px] font-black tracking-tighter text-gray-400 mt-2.5 leading-none w-full text-center">-</div>
                     <div id="exec-text-water" class="text-[11px] font-bold text-gray-400 mt-2 leading-tight w-full text-center">-</div>
-                    <div id="exec-note-water" class="text-[9px] text-gray-500 font-medium mt-1 w-full text-center">-</div>
+                    <div id="exec-note-water" class="text-[9px] text-gray-400 font-medium mt-1 w-full text-center leading-tight px-1">-</div>
                 </div>
 
                 <!-- ไฟฟ้า -->
                 <div id="exec-card-power" class="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col relative shadow-sm items-center text-center transition-all">
-                    <div id="exec-icon-power" class="absolute top-2.5 right-2.5 flex items-center justify-center"></div>
+                    <div id="exec-icon-power" class="absolute top-2 right-1.5 flex items-center justify-center"></div>
                     <div class="flex items-center gap-1.5 w-full justify-center">
                         <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/High%20voltage/3D/high_voltage_3d.png" class="w-5 h-5 drop-shadow-sm" crossorigin="anonymous">
                         <span class="font-extrabold text-gray-700 text-[14px]">ไฟฟ้า</span>
                     </div>
-                    <div id="exec-val-power" class="text-[26px] font-black tracking-tighter text-gray-400 mt-2.5 leading-none w-full text-center">-</div>
+                    <div id="exec-val-power" class="text-[28px] font-black tracking-tighter text-gray-400 mt-2.5 leading-none w-full text-center">-</div>
                     <div id="exec-text-power" class="text-[11px] font-bold text-gray-400 mt-2 leading-tight w-full text-center">-</div>
-                    <div id="exec-note-power" class="text-[9px] text-gray-500 font-medium mt-1 w-full text-center">-</div>
+                    <div id="exec-note-power" class="text-[9px] text-gray-400 font-medium mt-1 w-full text-center leading-tight px-1">-</div>
                 </div>
 
-                <!-- น้ำมันเชื้อเพลิง -->
+                <!-- น้ำมันเชื้อเพลิง (ขยับข้อความหลบไอคอน) -->
                 <div id="exec-card-oil" class="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col relative shadow-sm items-center text-center transition-all">
-                    <div id="exec-icon-oil" class="absolute top-2.5 right-2.5 flex items-center justify-center"></div>
-                    <div class="flex items-center gap-1.5 w-full justify-center">
+                    <div id="exec-icon-oil" class="absolute top-2 right-1.5 flex items-center justify-center"></div>
+                    <!-- เพิ่ม pr-6 เพื่อดันข้อความให้เยื้องขวา(หลบไอคอนยิ้มฝั่งขวา) -->
+                    <div class="flex items-center gap-1.5 w-full justify-center pr-5">
                         <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Fuel%20pump/3D/fuel_pump_3d.png" class="w-5 h-5 drop-shadow-sm" crossorigin="anonymous">
-                        <span class="font-extrabold text-gray-700 text-[14px]">น้ำมันเชื้อเพลิง</span>
+                        <span class="font-extrabold text-gray-700 text-[13.5px]">น้ำมันเชื้อเพลิง</span>
                     </div>
-                    <div id="exec-val-oil" class="text-[26px] font-black tracking-tighter text-gray-400 mt-2.5 leading-none w-full text-center">-</div>
+                    <div id="exec-val-oil" class="text-[28px] font-black tracking-tighter text-gray-400 mt-2.5 leading-none w-full text-center">-</div>
                     <div id="exec-text-oil" class="text-[11px] font-bold text-gray-400 mt-2 leading-tight w-full text-center">-</div>
-                    <div id="exec-note-oil" class="text-[9px] text-gray-500 font-medium mt-1 w-full text-center">-</div>
+                    <div id="exec-note-oil" class="text-[9px] text-gray-400 font-medium mt-1 w-full text-center leading-tight px-1">-</div>
                 </div>
 
                 <!-- กระดาษ -->
                 <div id="exec-card-paper" class="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col relative shadow-sm items-center text-center transition-all">
-                    <div id="exec-icon-paper" class="absolute top-2.5 right-2.5 flex items-center justify-center"></div>
+                    <div id="exec-icon-paper" class="absolute top-2 right-1.5 flex items-center justify-center"></div>
                     <div class="flex items-center gap-1.5 w-full justify-center">
                         <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Page%20facing%20up/3D/page_facing_up_3d.png" class="w-5 h-5 drop-shadow-sm" crossorigin="anonymous">
                         <span class="font-extrabold text-gray-700 text-[14px]">กระดาษ</span>
                     </div>
-                    <div id="exec-val-paper" class="text-[26px] font-black tracking-tighter text-gray-400 mt-2.5 leading-none w-full text-center">-</div>
+                    <div id="exec-val-paper" class="text-[28px] font-black tracking-tighter text-gray-400 mt-2.5 leading-none w-full text-center">-</div>
                     <div id="exec-text-paper" class="text-[11px] font-bold text-gray-400 mt-2 leading-tight w-full text-center">-</div>
-                    <div id="exec-note-paper" class="text-[9px] text-gray-500 font-medium mt-1 w-full text-center">-</div>
+                    <div id="exec-note-paper" class="text-[9px] text-gray-400 font-medium mt-1 w-full text-center leading-tight px-1">-</div>
                 </div>
 
                 <!-- ขยะทั่วไป -->
                 <div id="exec-card-genWaste" class="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col relative shadow-sm items-center text-center transition-all">
-                    <div id="exec-icon-genWaste" class="absolute top-2.5 right-2.5 flex items-center justify-center"></div>
+                    <div id="exec-icon-genWaste" class="absolute top-2 right-1.5 flex items-center justify-center"></div>
                     <div class="flex items-center gap-1.5 w-full justify-center">
                         <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Wastebasket/3D/wastebasket_3d.png" class="w-5 h-5 drop-shadow-sm" crossorigin="anonymous">
                         <span class="font-extrabold text-gray-700 text-[14px]">ขยะทั่วไป</span>
                     </div>
-                    <div id="exec-val-genWaste" class="text-[26px] font-black tracking-tighter text-gray-400 mt-2.5 leading-none w-full text-center">-</div>
+                    <div id="exec-val-genWaste" class="text-[28px] font-black tracking-tighter text-gray-400 mt-2.5 leading-none w-full text-center">-</div>
                     <div id="exec-text-genWaste" class="text-[11px] font-bold text-gray-400 mt-2 leading-tight w-full text-center">-</div>
-                    <div id="exec-note-genWaste" class="text-[9px] text-gray-500 font-medium mt-1 w-full text-center">-</div>
+                    <div id="exec-note-genWaste" class="text-[9px] text-gray-400 font-medium mt-1 w-full text-center leading-tight px-1">-</div>
                 </div>
 
                 <!-- ขยะรีไซเคิล -->
                 <div id="exec-card-recycle" class="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col relative shadow-sm items-center text-center transition-all">
-                    <div id="exec-icon-recycle" class="absolute top-2.5 right-2.5 flex items-center justify-center"></div>
+                    <div id="exec-icon-recycle" class="absolute top-2 right-1.5 flex items-center justify-center"></div>
                     <div class="flex items-center gap-1.5 w-full justify-center">
                         <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Recycling%20symbol/3D/recycling_symbol_3d.png" class="w-5 h-5 drop-shadow-sm" crossorigin="anonymous">
                         <span class="font-extrabold text-gray-700 text-[14px]">ขยะรีไซเคิล</span>
                     </div>
-                    <div id="exec-val-recycle" class="text-[26px] font-black tracking-tighter text-gray-400 mt-2.5 leading-none w-full text-center">-</div>
+                    <div id="exec-val-recycle" class="text-[28px] font-black tracking-tighter text-gray-400 mt-2.5 leading-none w-full text-center">-</div>
                     <div id="exec-text-recycle" class="text-[11px] font-bold text-gray-400 mt-2 leading-tight w-full text-center">-</div>
-                    <div id="exec-note-recycle" class="text-[9px] text-gray-500 font-medium mt-1 w-full text-center">-</div>
+                    <div id="exec-note-recycle" class="text-[9px] text-gray-400 font-medium mt-1 w-full text-center leading-tight px-1">-</div>
                 </div>
             </div>
         </div>
@@ -392,12 +393,11 @@
             globalChartData = data.chartData;
             if(currentTab === '') switchTab('exec'); else switchTab(currentTab);
             
-            const displayMonthTitle = data.month === "ทั้งปี" ? "รวมตลอดปี" : data.month;
+            const displayMonthTitle = data.month === "ทั้งปี" ? "รวมตลอดปี" : `เดือน ${data.month}`;
             const displayMonthCompare = data.month === "ทั้งปี" ? "รวมตลอดปี" : `เดือน ${data.month}`;
             const targetYear = parseInt(data.year);
             const prevYear = targetYear - 1;
             
-            // อัปเดตข้อความทั่วไป และข้อความหน้า Exec โฉมใหม่
             document.querySelectorAll('.display-month-year').forEach(el => el.innerText = `${displayMonthTitle} ${targetYear}`);
             if(document.getElementById('exec-display-month')) document.getElementById('exec-display-month').innerText = `${displayMonthTitle} ${targetYear}`;
             
@@ -432,7 +432,6 @@
                 if(!info) return;
                 const isRed = info.status === 'red';
                 
-                // 1) อัปเดตหน้ากราฟรายละเอียด
                 const valEl = document.getElementById(`val-${type}`);
                 if(valEl) {
                     valEl.innerText = info.percent;
@@ -446,7 +445,7 @@
                 const iconEl = document.getElementById(`icon-${type}`);
                 if(iconEl) iconEl.innerHTML = isRed ? frownIcon : smileIcon;
 
-                // 2) อัปเดตหน้าบทสรุป (Exec Score Card)
+                // --- อัปเดตหน้าบทสรุป (Score Card ใหม่) ---
                 let targetType = type === 'ghgTotal' ? 'ghg' : type;
                 const execCard = document.getElementById(`exec-card-${targetType}`);
                 if(execCard) {
@@ -457,31 +456,33 @@
                 const execVal = document.getElementById(`exec-val-${targetType}`);
                 if(execVal) {
                     execVal.innerText = info.percent;
-                    const sizeClass = targetType === 'ghg' ? 'text-4xl' : 'text-[26px]';
+                    const sizeClass = targetType === 'ghg' ? 'text-[40px]' : 'text-[28px]';
                     execVal.className = `${sizeClass} font-black tracking-tighter mt-2.5 leading-none w-full text-center drop-shadow-sm ${isRed ? 'text-red-600' : 'text-green-600'}`;
                 }
                 
                 const execText = document.getElementById(`exec-text-${targetType}`);
                 if(execText) {
                     execText.innerText = info.text;
-                    const textSizeClass = targetType === 'ghg' ? 'text-[14px]' : 'text-[11px]';
+                    const textSizeClass = targetType === 'ghg' ? 'text-[13px]' : 'text-[11px]';
                     execText.className = `${textSizeClass} font-bold mt-2 leading-tight w-full text-center ${isRed ? 'text-red-700' : 'text-green-700'}`;
                 }
                 
-                // อัปเดตเงื่อนไขเปรียบเทียบ
+                // อัปเดตเงื่อนไขเปรียบเทียบ ด้านล่างสุดของแต่ละกล่อง
                 const execNote = document.getElementById(`exec-note-${targetType}`);
                 if(execNote) {
                     if(targetType === 'recycle') {
-                        execNote.innerText = `(เป้าหมาย: รีไซเคิล ${parseInt(data.year) >= 2568 ? 50 : 45}% ของขยะรวม)`;
+                        execNote.innerHTML = `(เป้าหมาย: รีไซเคิล ≥ ${parseInt(data.year) >= 2568 ? 50 : 45}% ของขยะรวม)`;
+                    } else if(targetType === 'ghg') {
+                        execNote.innerHTML = `(เทียบกับเป้าหมายลด 2% จากผลการดำเนินงาน${displayMonthCompare} ${prevYear})`;
                     } else {
-                        execNote.innerText = `(เทียบกับ ${displayMonthCompare} ${prevYear})`;
+                        execNote.innerHTML = `(เทียบกับเป้าหมายลด 1% จากผลการดำเนินงาน${displayMonthCompare} ${prevYear})`;
                     }
                 }
 
-                // อัปเดต Emoji ใน Score Card
+                // อัปเดต อิโมจิ
                 const execIcon = document.getElementById(`exec-icon-${targetType}`);
                 if(execIcon) {
-                    const imgSize = targetType === 'ghg' ? 'w-[45px] h-[45px]' : 'w-[35px] h-[35px]';
+                    const imgSize = targetType === 'ghg' ? 'w-[40px] h-[40px]' : 'w-[32px] h-[32px]';
                     let smFrown = `<img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Worried%20face/3D/worried_face_3d.png" crossorigin="anonymous" class="${imgSize} drop-shadow-md">`;
                     let smSmile = `<img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Smiling%20face%20with%20smiling%20eyes/3D/smiling_face_with_smiling_eyes_3d.png" crossorigin="anonymous" class="${imgSize} drop-shadow-md">`;
                     execIcon.innerHTML = isRed ? smFrown : smSmile;
@@ -504,7 +505,6 @@
             } 
         }
 
-        // ================= 📈 วาดกราฟเส้นประเขียว/แดง และพยากรณ์ =================
         function renderCharts() {
             if(!globalChartData) return;
             const monthVal = document.getElementById('select-month').value;
