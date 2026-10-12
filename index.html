@@ -129,7 +129,7 @@
                 <!-- น้ำมันเชื้อเพลิง -->
                 <div id="exec-card-oil" class="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col relative shadow-sm items-center text-center transition-all">
                     <div id="exec-icon-oil" class="absolute top-2 right-1.5 flex items-center justify-center"></div>
-                    <div class="flex items-center gap-1.5 w-full justify-center pr-5">
+                    <div class="flex items-center gap-1.5 w-full justify-center pr-6">
                         <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Fuel%20pump/3D/fuel_pump_3d.png" class="w-5 h-5 drop-shadow-sm" crossorigin="anonymous">
                         <span class="font-extrabold text-gray-700 text-[13.5px]">น้ำมันเชื้อเพลิง</span>
                     </div>
@@ -201,7 +201,7 @@
             <div class="display-forecast-text hidden mt-3">
                 <p class="text-[11px] text-gray-600 font-bold bg-gray-50 px-4 py-2 rounded-xl inline-block border border-gray-200 text-left leading-relaxed">
                     <span class="text-red-500">🔴 เส้นประสีแดง:</span> คาดการณ์ความน่าจะเป็น (อ้างอิงอัตราส่วนปัจจุบัน)<br>
-                    <span class="text-green-600">🟢 เส้นประสีเขียว:</span> เป้าหมายที่ต้องควบคุม (-1% จากปีก่อน)
+                    <span class="text-green-600">🟢 เส้นประสีเขียว:</span> เป้าหมายที่ต้องควบคุม (อ้างอิงเป้าลด % จากตาราง)
                 </p>
             </div>
         </div>
@@ -302,7 +302,7 @@
             <div class="display-forecast-text hidden mt-3">
                 <p class="text-[11px] text-gray-600 font-bold bg-gray-50 px-4 py-2 rounded-xl inline-block border border-gray-200 text-left leading-relaxed">
                     <span class="text-red-500">🔴 เส้นประสีแดง:</span> คาดการณ์ความน่าจะเป็น (อ้างอิงอัตราส่วนปัจจุบัน)<br>
-                    <span class="text-green-600">🟢 เส้นประสีเขียว:</span> เป้าหมายที่ต้องควบคุม (-2% จากปีก่อน)
+                    <span class="text-green-600">🟢 เส้นประสีเขียว:</span> เป้าหมายที่ต้องควบคุม (อ้างอิงเป้าลด % จากตาราง)
                 </p>
             </div>
         </div>
@@ -409,7 +409,7 @@
             }
 
             if(document.getElementById('note-target')) document.getElementById('note-target').innerText = (targetYear >= 2568) ? "50" : "45";
-            if(document.getElementById('note-ghg-target') && !data.ghg.error) document.getElementById('note-ghg-target').innerText = data.ghg.target;
+            if(document.getElementById('note-ghg-target') && !data.ghg.error) document.getElementById('note-ghg-target').innerText = data.targets.ghg || 2;
 
             const setAnalysis = (keyword, elementId) => {
                 const container = document.getElementById(elementId);
@@ -442,7 +442,7 @@
                 const iconEl = document.getElementById(`icon-${type}`);
                 if(iconEl) iconEl.innerHTML = isRed ? frownIcon : smileIcon;
 
-                // --- Score Card ใหม่ ---
+                // --- Score Card ---
                 let targetType = type === 'ghgTotal' ? 'ghg' : type;
                 const execCard = document.getElementById(`exec-card-${targetType}`);
                 if(execCard) {
@@ -464,14 +464,14 @@
                     execText.className = `${textSizeClass} font-bold mt-2 leading-tight w-full text-center ${isRed ? 'text-red-700' : 'text-green-700'}`;
                 }
                 
+                // ดึงเป้าหมายเป๊ะๆ จาก Object targets มาแสดงผล
                 const execNote = document.getElementById(`exec-note-${targetType}`);
                 if(execNote) {
                     if(targetType === 'recycle') {
-                        execNote.innerHTML = `(เป้าหมาย: รีไซเคิล ≥ ${parseInt(data.year) >= 2568 ? 50 : 45}% ของขยะรวม)`;
-                    } else if(targetType === 'ghg') {
-                        execNote.innerHTML = `(เทียบกับเป้าหมายลด 2% จากผลการดำเนินงาน${displayMonthCompare} ${prevYear})`;
+                        execNote.innerHTML = `(เป้าหมาย: รีไซเคิล ≥ ${data.targets.recycle}% ของขยะรวม)`;
                     } else {
-                        execNote.innerHTML = `(เทียบกับเป้าหมายลด 1% จากผลการดำเนินงาน${displayMonthCompare} ${prevYear})`;
+                        let dynamicPct = data.targets[targetType] || 1;
+                        execNote.innerHTML = `(เทียบกับเป้าหมายลด ${dynamicPct}% จากผลการดำเนินงาน${displayMonthCompare} ${prevYear})`;
                     }
                 }
 
@@ -500,6 +500,7 @@
             } 
         }
 
+        // ================= 📈 วาดกราฟเส้นประเขียว/แดง ไดนามิก =================
         function renderCharts() {
             if(!globalChartData) return;
             const monthVal = document.getElementById('select-month').value;
@@ -523,6 +524,31 @@
                 
                 const ctx = document.getElementById(canvasId).getContext('2d');
                 
+                // ดึงตัวแปร Target ของตัวเองออกมา
+                // globalChartData ไม่มี targets มาด้วย เราจึงต้องรับจาก response
+                // ซึ่งเราเก็บไว้ที่ data.targets ไปแล้วตอนเรียก API (สามารถดึงจาก window/global ได้ ถ้าเก็บไว้ แต่เดี๋ยวผม Fetch ผ่าน DOM เพื่อความแน่นอน)
+                let specificTargetPct = 1;
+                let targetLabelName = 'เป้าหมาย (-1%)';
+
+                let rawNoteText = "";
+                if(canvasId === 'chartWater') rawNoteText = document.getElementById('exec-note-water').innerText;
+                if(canvasId === 'chartPower') rawNoteText = document.getElementById('exec-note-power').innerText;
+                if(canvasId === 'chartOil') rawNoteText = document.getElementById('exec-note-oil').innerText;
+                if(canvasId === 'chartPaper') rawNoteText = document.getElementById('exec-note-paper').innerText;
+                if(canvasId === 'chartGenWaste') rawNoteText = document.getElementById('exec-note-genWaste').innerText;
+                if(canvasId === 'chartGHG') rawNoteText = document.getElementById('exec-note-ghg').innerText;
+                
+                let extractMatch = rawNoteText.match(/ลด\s*(\d+)%/);
+                if (extractMatch && extractMatch[1]) {
+                    specificTargetPct = parseInt(extractMatch[1]);
+                    targetLabelName = `เป้าหมาย (-${specificTargetPct}%)`;
+                }
+
+                if (canvasId === 'chartRecycle') {
+                    specificTargetPct = parseInt(targetYear) >= 2568 ? 50 : 45;
+                    targetLabelName = 'เป้าหมาย (ขั้นต่ำ)';
+                }
+
                 if (isFullYear) {
                     let actualData = (seriesData && seriesData[targetYear]) ? [...seriesData[targetYear]] : new Array(12).fill(null);
                     let prevData = (seriesData && seriesData[prevYearStr]) ? seriesData[prevYearStr] : new Array(12).fill(0);
@@ -551,38 +577,28 @@
                     }
 
                     if (canvasId === 'chartRecycle') {
-                        let targetPct = parseInt(targetYear) >= 2568 ? 0.50 : 0.45;
                         let totalWasteSeries = (globalChartData.totalWaste && globalChartData.totalWaste[targetYear]) ? globalChartData.totalWaste[targetYear] : new Array(12).fill(0);
                         
                         for(let i = 0; i < 12; i++) {
                             if (i <= lastValidIndex) {
                                 let totalW = totalWasteSeries[i] || 0;
-                                targetLine[i] = totalW > 0 ? Math.round(totalW * targetPct) : null;
+                                targetLine[i] = totalW > 0 ? Math.round(totalW * (specificTargetPct/100)) : null;
                             } else if (lastValidIndex !== -1) {
                                 targetLine[i] = targetLine[lastValidIndex]; 
                             }
                         }
-                    } else if (canvasId === 'chartGHG') {
-                        // ก๊าซเรือนกระจก เป้าหมายลด 2%
-                        for(let i = 0; i < 12; i++) {
-                            let pVal = prevData[i] || 0;
-                            targetLine[i] = pVal > 0 ? Math.round(pVal * 0.98) : (i > 0 ? targetLine[i-1] : null);
-                        }
                     } else {
-                        // หมวดอื่นๆ เป้าหมายลด 1%
+                        // คำนวณเส้นสีเขียวตามเป้าหมายของแต่ละอัน (1%, 2%, 3%)
+                        let multiplier = 1 - (specificTargetPct / 100);
                         for(let i = 0; i < 12; i++) {
                             let pVal = prevData[i] || 0;
-                            targetLine[i] = pVal > 0 ? Math.round(pVal * 0.99) : (i > 0 ? targetLine[i-1] : null);
+                            targetLine[i] = pVal > 0 ? Math.round(pVal * multiplier) : (i > 0 ? targetLine[i-1] : null);
                         }
                     }
 
                     let dataY3 = (seriesData && seriesData[String(parseInt(targetYear)-3)]) ? seriesData[String(parseInt(targetYear)-3)] : new Array(12).fill(null);
                     let dataY2 = (seriesData && seriesData[String(parseInt(targetYear)-2)]) ? seriesData[String(parseInt(targetYear)-2)] : new Array(12).fill(null);
                     let dataY1 = (seriesData && seriesData[String(parseInt(targetYear)-1)]) ? seriesData[String(parseInt(targetYear)-1)] : new Array(12).fill(null);
-                    
-                    let targetLabel = 'เป้าหมาย (-1%)';
-                    if (canvasId === 'chartRecycle') targetLabel = 'เป้าหมาย (ขั้นต่ำ)';
-                    if (canvasId === 'chartGHG') targetLabel = 'เป้าหมาย (-2%)';
 
                     chartsInstance[canvasId] = new Chart(ctx, {
                         type: 'line', plugins: [ChartDataLabels],
@@ -618,7 +634,7 @@
                                     order: 1 
                                 },
                                 { 
-                                    label: targetLabel, 
+                                    label: targetLabelName, 
                                     data: targetLine, borderColor: colorTarget, borderDash: [4, 4], borderWidth: 2, pointRadius: 0, 
                                     datalabels: { display: false }, 
                                     order: 3 
