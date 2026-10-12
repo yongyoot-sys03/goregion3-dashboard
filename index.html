@@ -35,7 +35,9 @@
             <option value="2566">ปี 2566</option><option value="2567">ปี 2567</option><option value="2568">ปี 2568</option><option value="2569" selected>ปี 2569</option>
         </select>
         <select id="select-month" class="bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-gray-700 font-bold focus:outline-none focus:ring-2 focus:ring-red-400">
-            <option value="ทั้งปี">📌 ทั้งปี (ตลอดปี)</option><option value="มกราคม" selected>มกราคม</option><option value="กุมภาพันธ์">กุมภาพันธ์</option><option value="มีนาคม">มีนาคม</option><option value="เมษายน">เมษายน</option><option value="พฤษภาคม">พฤษภาคม</option><option value="มิถุนายน">มิถุนายน</option><option value="กรกฎาคม">กรกฎาคม</option><option value="สิงหาคม">สิงหาคม</option><option value="กันยายน">กันยายน</option><option value="ตุลาคม">ตุลาคม</option><option value="พฤศจิกายน">พฤศจิกายน</option><option value="ธันวาคม">ธันวาคม</option>
+            <!-- ปรับแก้ชื่อให้เข้าใจง่ายขึ้นว่าเป็นยอด YTD -->
+            <option value="ทั้งปี">📌 สรุปยอดสะสม (YTD)</option>
+            <option value="มกราคม" selected>มกราคม</option><option value="กุมภาพันธ์">กุมภาพันธ์</option><option value="มีนาคม">มีนาคม</option><option value="เมษายน">เมษายน</option><option value="พฤษภาคม">พฤษภาคม</option><option value="มิถุนายน">มิถุนายน</option><option value="กรกฎาคม">กรกฎาคม</option><option value="สิงหาคม">สิงหาคม</option><option value="กันยายน">กันยายน</option><option value="ตุลาคม">ตุลาคม</option><option value="พฤศจิกายน">พฤศจิกายน</option><option value="ธันวาคม">ธันวาคม</option>
         </select>
         <button onclick="fetchData()" class="bg-gradient-to-r from-[#3b719f] to-[#254b6e] text-white px-6 py-2.5 rounded-xl font-bold hover:shadow-lg transition-all shadow-md">เรียกดูข้อมูล</button>
         <button id="btn-download" onclick="downloadImage()" class="hidden bg-gradient-to-r from-gray-700 to-gray-900 text-white px-5 py-2.5 rounded-xl font-bold hover:shadow-lg transition-all shadow-md flex items-center gap-2">
@@ -390,8 +392,9 @@
             globalChartData = data.chartData;
             if(currentTab === '') switchTab('exec'); else switchTab(currentTab);
             
-            const displayMonthTitle = data.month === "ทั้งปี" ? "รวมตลอดปี" : `เดือน ${data.month}`;
-            const displayMonthCompare = data.month === "ทั้งปี" ? "รวมตลอดปี" : `เดือน ${data.month}`;
+            // ปรับข้อความเดือน/ปี ให้สื่อความหมายตรงกันกับการคำนวณแบบ YTD
+            const displayMonthTitle = data.month === "ทั้งปี" ? "สรุปภาพรวมสะสม (YTD)" : `เดือน ${data.month}`;
+            const displayMonthCompare = data.month === "ทั้งปี" ? "ยอดสะสม (YTD)" : `เดือน ${data.month}`;
             const targetYear = parseInt(data.year);
             const prevYear = targetYear - 1;
             
@@ -464,7 +467,6 @@
                     execText.className = `${textSizeClass} font-bold mt-2 leading-tight w-full text-center ${isRed ? 'text-red-700' : 'text-green-700'}`;
                 }
                 
-                // ดึงเป้าหมายเป๊ะๆ จาก Object targets มาแสดงผล
                 const execNote = document.getElementById(`exec-note-${targetType}`);
                 if(execNote) {
                     if(targetType === 'recycle') {
@@ -500,7 +502,6 @@
             } 
         }
 
-        // ================= 📈 วาดกราฟเส้นประเขียว/แดง ไดนามิก =================
         function renderCharts() {
             if(!globalChartData) return;
             const monthVal = document.getElementById('select-month').value;
@@ -524,9 +525,6 @@
                 
                 const ctx = document.getElementById(canvasId).getContext('2d');
                 
-                // ดึงตัวแปร Target ของตัวเองออกมา
-                // globalChartData ไม่มี targets มาด้วย เราจึงต้องรับจาก response
-                // ซึ่งเราเก็บไว้ที่ data.targets ไปแล้วตอนเรียก API (สามารถดึงจาก window/global ได้ ถ้าเก็บไว้ แต่เดี๋ยวผม Fetch ผ่าน DOM เพื่อความแน่นอน)
                 let specificTargetPct = 1;
                 let targetLabelName = 'เป้าหมาย (-1%)';
 
@@ -588,7 +586,6 @@
                             }
                         }
                     } else {
-                        // คำนวณเส้นสีเขียวตามเป้าหมายของแต่ละอัน (1%, 2%, 3%)
                         let multiplier = 1 - (specificTargetPct / 100);
                         for(let i = 0; i < 12; i++) {
                             let pVal = prevData[i] || 0;
