@@ -35,7 +35,6 @@
             <option value="2566">ปี 2566</option><option value="2567">ปี 2567</option><option value="2568">ปี 2568</option><option value="2569" selected>ปี 2569</option>
         </select>
         <select id="select-month" class="bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-gray-700 font-bold focus:outline-none focus:ring-2 focus:ring-red-400">
-            <!-- ปรับแก้ชื่อให้เข้าใจง่ายขึ้นว่าเป็นยอด YTD -->
             <option value="ทั้งปี">📌 สรุปยอดสะสม (YTD)</option>
             <option value="มกราคม" selected>มกราคม</option><option value="กุมภาพันธ์">กุมภาพันธ์</option><option value="มีนาคม">มีนาคม</option><option value="เมษายน">เมษายน</option><option value="พฤษภาคม">พฤษภาคม</option><option value="มิถุนายน">มิถุนายน</option><option value="กรกฎาคม">กรกฎาคม</option><option value="สิงหาคม">สิงหาคม</option><option value="กันยายน">กันยายน</option><option value="ตุลาคม">ตุลาคม</option><option value="พฤศจิกายน">พฤศจิกายน</option><option value="ธันวาคม">ธันวาคม</option>
         </select>
@@ -392,7 +391,6 @@
             globalChartData = data.chartData;
             if(currentTab === '') switchTab('exec'); else switchTab(currentTab);
             
-            // ปรับข้อความเดือน/ปี ให้สื่อความหมายตรงกันกับการคำนวณแบบ YTD
             const displayMonthTitle = data.month === "ทั้งปี" ? "สรุปภาพรวมสะสม (YTD)" : `เดือน ${data.month}`;
             const displayMonthCompare = data.month === "ทั้งปี" ? "ยอดสะสม (YTD)" : `เดือน ${data.month}`;
             const targetYear = parseInt(data.year);
@@ -467,13 +465,19 @@
                     execText.className = `${textSizeClass} font-bold mt-2 leading-tight w-full text-center ${isRed ? 'text-red-700' : 'text-green-700'}`;
                 }
                 
+                // อัปเดตเงื่อนไขให้รองรับกรณี "ไม่ได้ระบุ"
                 const execNote = document.getElementById(`exec-note-${targetType}`);
                 if(execNote) {
                     if(targetType === 'recycle') {
                         execNote.innerHTML = `(เป้าหมาย: รีไซเคิล ≥ ${data.targets.recycle}% ของขยะรวม)`;
                     } else {
-                        let dynamicPct = data.targets[targetType] || 1;
-                        execNote.innerHTML = `(เทียบกับเป้าหมายลด ${dynamicPct}% จากผลการดำเนินงาน${displayMonthCompare} ${prevYear})`;
+                        let dynamicPct = data.targets[targetType];
+                        if (dynamicPct === "ไม่ได้ระบุ") {
+                            execNote.innerHTML = `(ไม่ได้ระบุเป้าหมายการลด)`;
+                        } else {
+                            dynamicPct = dynamicPct || 1;
+                            execNote.innerHTML = `(เทียบกับเป้าหมายลด ${dynamicPct}% จากผลการดำเนินงาน${displayMonthCompare} ${prevYear})`;
+                        }
                     }
                 }
 
@@ -502,6 +506,7 @@
             } 
         }
 
+        // ================= 📈 วาดกราฟ: อัปเดตซ่อนเส้นกรณี "ไม่ได้ระบุ" =================
         function renderCharts() {
             if(!globalChartData) return;
             const monthVal = document.getElementById('select-month').value;
@@ -540,6 +545,11 @@
                 if (extractMatch && extractMatch[1]) {
                     specificTargetPct = parseInt(extractMatch[1]);
                     targetLabelName = `เป้าหมาย (-${specificTargetPct}%)`;
+                }
+                
+                // ตรวจสอบเพื่อซ่อนเส้นกราฟ
+                if (rawNoteText.includes('ไม่ได้ระบุเป้าหมาย')) {
+                    specificTargetPct = "ไม่ได้ระบุ";
                 }
 
                 if (canvasId === 'chartRecycle') {
@@ -586,10 +596,14 @@
                             }
                         }
                     } else {
-                        let multiplier = 1 - (specificTargetPct / 100);
-                        for(let i = 0; i < 12; i++) {
-                            let pVal = prevData[i] || 0;
-                            targetLine[i] = pVal > 0 ? Math.round(pVal * multiplier) : (i > 0 ? targetLine[i-1] : null);
+                        if (specificTargetPct === "ไม่ได้ระบุ") {
+                            for(let i = 0; i < 12; i++) targetLine[i] = null; // ซ่อนเส้นประ
+                        } else {
+                            let multiplier = 1 - (specificTargetPct / 100);
+                            for(let i = 0; i < 12; i++) {
+                                let pVal = prevData[i] || 0;
+                                targetLine[i] = pVal > 0 ? Math.round(pVal * multiplier) : (i > 0 ? targetLine[i-1] : null);
+                            }
                         }
                     }
 
@@ -631,7 +645,7 @@
                                     order: 1 
                                 },
                                 { 
-                                    label: targetLabelName, 
+                                    label: specificTargetPct === "ไม่ได้ระบุ" ? 'ไม่ได้ระบุเป้าหมาย' : targetLabelName, 
                                     data: targetLine, borderColor: colorTarget, borderDash: [4, 4], borderWidth: 2, pointRadius: 0, 
                                     datalabels: { display: false }, 
                                     order: 3 
@@ -647,6 +661,7 @@
                                     labels: { 
                                         font: { family: 'Kanit', size: 10 }, boxWidth: 10, usePointStyle: true,
                                         filter: function(item, chart) { 
+                                            if (specificTargetPct === "ไม่ได้ระบุ" && item.text === 'ไม่ได้ระบุเป้าหมาย') return false;
                                             return !item.text.includes('เป้าหมาย') && !item.text.includes('คาดการณ์'); 
                                         }
                                     } 
