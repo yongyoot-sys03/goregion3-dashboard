@@ -76,14 +76,12 @@
     <!-- ==================== DASHBOARD: 1. บทสรุปผล ==================== -->
     <div id="dashboard-exec" class="hidden bg-white rounded-[2.5rem] shadow-[0_20px_40px_rgba(0,0,0,0.08)] w-full max-w-lg p-5 sm:p-8 space-y-6 border border-white">
         
-        <!-- ส่วนหัวตาราง -->
         <div class="text-center mb-2 border-b border-gray-100 pb-5">
             <img src="https://i.postimg.cc/BnxKQyWx/LINE-ALBUM-New-logo-221018.jpg" alt="โลโก้" class="h-20 mx-auto mb-3 object-contain drop-shadow-md">
             <h2 class="text-2xl font-extrabold text-gray-800">สำนักงานไปรษณีย์เขต 3</h2>
             <p class="text-[12px] text-green-600 font-bold mt-1 italic">"รู้รักษ์สิ่งแวดล้อม รู้ถนอมพลังงาน รู้ใช้พอประมาณ รักษาองค์กรสีเขียวให้ยั่งยืน"</p>
             <div class="w-16 h-1 bg-gray-200 rounded-full mx-auto my-3"></div>
             <h3 class="text-[16px] text-[#3b719f] font-bold mt-1">บทสรุปผลการดำเนินงาน</h3>
-            <!-- เปลี่ยนสีแดงตัวใหญ่ และเพิ่มข้อความเปรียบเทียบ -->
             <p id="exec-display-month" class="text-xl text-red-600 font-black mt-2 tracking-wide">กรุณากดเรียกดูข้อมูล</p>
             <p id="exec-display-compare" class="text-[14px] text-gray-600 font-bold mt-1">-</p>
         </div>
@@ -92,7 +90,7 @@
             <h3 class="font-extrabold text-gray-700 mb-4 text-center border-b border-gray-100 pb-2">🚦 สถานะเป้าหมาย (KPI Score Card)</h3>
             
             <div class="grid grid-cols-2 gap-3 mb-2">
-                <!-- ก๊าซเรือนกระจก (ย้ายขึ้นบนสุด เต็มแถว ขยายขนาดใหญ่พิเศษ) -->
+                <!-- ก๊าซเรือนกระจก -->
                 <div id="exec-card-ghg" class="col-span-2 bg-gray-50 border border-gray-200 rounded-3xl p-5 flex flex-col relative shadow-md items-center text-center transition-all mb-2">
                     <div id="exec-icon-ghg" class="absolute top-4 right-4 flex items-center justify-center"></div>
                     <div class="flex items-center gap-2 w-full justify-center mb-1">
@@ -128,10 +126,9 @@
                     <div id="exec-note-power" class="text-[9px] text-gray-400 font-medium mt-1 w-full text-center leading-tight px-1">-</div>
                 </div>
 
-                <!-- น้ำมันเชื้อเพลิง (ขยับข้อความหลบไอคอน) -->
+                <!-- น้ำมันเชื้อเพลิง -->
                 <div id="exec-card-oil" class="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col relative shadow-sm items-center text-center transition-all">
                     <div id="exec-icon-oil" class="absolute top-2 right-1.5 flex items-center justify-center"></div>
-                    <!-- เพิ่ม pr-6 เพื่อดันข้อความให้เยื้องขวา(หลบไอคอนยิ้มฝั่งขวา) -->
                     <div class="flex items-center gap-1.5 w-full justify-center pr-5">
                         <img src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@latest/assets/Fuel%20pump/3D/fuel_pump_3d.png" class="w-5 h-5 drop-shadow-sm" crossorigin="anonymous">
                         <span class="font-extrabold text-gray-700 text-[13.5px]">น้ำมันเชื้อเพลิง</span>
@@ -305,7 +302,7 @@
             <div class="display-forecast-text hidden mt-3">
                 <p class="text-[11px] text-gray-600 font-bold bg-gray-50 px-4 py-2 rounded-xl inline-block border border-gray-200 text-left leading-relaxed">
                     <span class="text-red-500">🔴 เส้นประสีแดง:</span> คาดการณ์ความน่าจะเป็น (อ้างอิงอัตราส่วนปัจจุบัน)<br>
-                    <span class="text-green-600">🟢 เส้นประสีเขียว:</span> เป้าหมายที่ต้องควบคุม (-1% จากปีก่อน)
+                    <span class="text-green-600">🟢 เส้นประสีเขียว:</span> เป้าหมายที่ต้องควบคุม (-2% จากปีก่อน)
                 </p>
             </div>
         </div>
@@ -445,7 +442,7 @@
                 const iconEl = document.getElementById(`icon-${type}`);
                 if(iconEl) iconEl.innerHTML = isRed ? frownIcon : smileIcon;
 
-                // --- อัปเดตหน้าบทสรุป (Score Card ใหม่) ---
+                // --- Score Card ใหม่ ---
                 let targetType = type === 'ghgTotal' ? 'ghg' : type;
                 const execCard = document.getElementById(`exec-card-${targetType}`);
                 if(execCard) {
@@ -467,7 +464,6 @@
                     execText.className = `${textSizeClass} font-bold mt-2 leading-tight w-full text-center ${isRed ? 'text-red-700' : 'text-green-700'}`;
                 }
                 
-                // อัปเดตเงื่อนไขเปรียบเทียบ ด้านล่างสุดของแต่ละกล่อง
                 const execNote = document.getElementById(`exec-note-${targetType}`);
                 if(execNote) {
                     if(targetType === 'recycle') {
@@ -479,7 +475,6 @@
                     }
                 }
 
-                // อัปเดต อิโมจิ
                 const execIcon = document.getElementById(`exec-icon-${targetType}`);
                 if(execIcon) {
                     const imgSize = targetType === 'ghg' ? 'w-[40px] h-[40px]' : 'w-[32px] h-[32px]';
@@ -567,7 +562,14 @@
                                 targetLine[i] = targetLine[lastValidIndex]; 
                             }
                         }
+                    } else if (canvasId === 'chartGHG') {
+                        // ก๊าซเรือนกระจก เป้าหมายลด 2%
+                        for(let i = 0; i < 12; i++) {
+                            let pVal = prevData[i] || 0;
+                            targetLine[i] = pVal > 0 ? Math.round(pVal * 0.98) : (i > 0 ? targetLine[i-1] : null);
+                        }
                     } else {
+                        // หมวดอื่นๆ เป้าหมายลด 1%
                         for(let i = 0; i < 12; i++) {
                             let pVal = prevData[i] || 0;
                             targetLine[i] = pVal > 0 ? Math.round(pVal * 0.99) : (i > 0 ? targetLine[i-1] : null);
@@ -577,6 +579,10 @@
                     let dataY3 = (seriesData && seriesData[String(parseInt(targetYear)-3)]) ? seriesData[String(parseInt(targetYear)-3)] : new Array(12).fill(null);
                     let dataY2 = (seriesData && seriesData[String(parseInt(targetYear)-2)]) ? seriesData[String(parseInt(targetYear)-2)] : new Array(12).fill(null);
                     let dataY1 = (seriesData && seriesData[String(parseInt(targetYear)-1)]) ? seriesData[String(parseInt(targetYear)-1)] : new Array(12).fill(null);
+                    
+                    let targetLabel = 'เป้าหมาย (-1%)';
+                    if (canvasId === 'chartRecycle') targetLabel = 'เป้าหมาย (ขั้นต่ำ)';
+                    if (canvasId === 'chartGHG') targetLabel = 'เป้าหมาย (-2%)';
 
                     chartsInstance[canvasId] = new Chart(ctx, {
                         type: 'line', plugins: [ChartDataLabels],
@@ -612,7 +618,7 @@
                                     order: 1 
                                 },
                                 { 
-                                    label: canvasId === 'chartRecycle' ? 'เป้าหมาย (ขั้นต่ำ)' : 'เป้าหมาย (-1%)', 
+                                    label: targetLabel, 
                                     data: targetLine, borderColor: colorTarget, borderDash: [4, 4], borderWidth: 2, pointRadius: 0, 
                                     datalabels: { display: false }, 
                                     order: 3 
